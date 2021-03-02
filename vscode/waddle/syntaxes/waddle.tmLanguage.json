@@ -1,0 +1,276 @@
+{
+	"information_for_contributors": [
+		"This file has been converted from https://github.com/atom/language-waddle/blob/master/grammars/waddle.cson",
+		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
+		"Once accepted there, we are happy to receive an update request."
+	],
+	"version": "https://github.com/atom/language-waddle/commit/b6fd68f74efa109679e31fe6f4a41ac105262d0e",
+	"name": "waddle",
+	"scopeName": "source.waddle",
+	"comment": "waddle language",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"comment": "Interpreted string literals",
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.waddle"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.waddle"
+				}
+			},
+			"name": "string.quoted.double.waddle",
+			"patterns": [
+				{
+					"include": "#string_placeholder"
+				}
+			]
+		},
+		{
+			"comment": "Regex string literals",
+			"begin": "`",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.waddle"
+				}
+			},
+			"end": "`",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.waddle"
+				}
+			},
+			"name": "string.quoted.double.waddle",
+			"patterns": [
+				{
+					"include": "#string_placeholder"
+				}
+			]
+		},
+		{
+			"comment": "Char literals",
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.waddle"
+				}
+			},
+			"end": "'",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.waddle"
+				}
+			},
+			"name": "string.quoted.double.waddle",
+			"patterns": [
+				{
+					"include": "#string_placeholder"
+				}
+			]
+		},
+		{
+			"comment": "Built-in functions",
+			"match": "\\b(push|int|string|float|char|bool|buffer|print)\\b(?=\\()",
+			"name": "support.function.builtin.waddle"
+		},
+		{
+			"comment": "Floating-point literals",
+			"match": "(\\.\\d+([Ee][-+]\\d+)?i?)\\b|\\b\\d+\\.\\d*(([Ee][-+]\\d+)?i?\\b)?",
+			"name": "constant.numeric.floating-point.waddle"
+		},
+		{
+			"comment": "Integers",
+			"match": "\\b((0x[0-9a-fA-F]+)|(0[0-7]+i?)|(\\d+([Ee]\\d+)?i?)|(\\d+[Ee][-+]\\d+i?))\\b",
+			"name": "constant.numeric.integer.waddle"
+		},
+		{
+			"comment": "Language constants",
+			"match": "\\b(true|false|null)\\b",
+			"name": "constant.language.waddle"
+		},
+		{
+			"comment": "Function call",
+			"match": "(\\b(?!function)(?:[A-Za-z0-9_]+))\\(",
+			"captures":{
+				"1": {
+					"name": "support.function.appdef.waddle"
+				}
+			}
+		},
+		{
+			"match": "\\b\\w+\\.(\\w+)",
+			"captures": {
+				"1": {
+					"name": "variable.other.property.waddle"
+				}
+			}
+		},
+		{
+			"match": "\\b(\\w+)\\b(?=\\s*:)\\b",
+			"captures": {
+				"1": {
+					"name": "variable.assignment.waddle"
+				}
+			}
+		},
+		{
+			"comment": "Terminators",
+			"match": ";",
+			"name": "punctuation.terminator.waddle"
+		},
+		{
+			"include": "#brackets"
+		},
+		{
+			"include": "#delimiters"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#storage_types"
+		}
+	],
+	"repository": {
+		"brackets": {
+			"patterns": [
+				{
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.begin.bracket.curly.waddle"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.end.bracket.curly.waddle"
+						}
+					},
+					"patterns": [
+						{
+							"include": "$self"
+						}
+					]
+				},
+				{
+					"begin": "\\(",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.begin.bracket.round.waddle"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.end.bracket.round.waddle"
+						}
+					},
+					"patterns": [
+						{
+							"include": "$self"
+						}
+					]
+				},
+				{
+					"match": "\\[|\\]",
+					"name": "punctuation.definition.bracket.square.waddle"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"begin": "//",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.waddle"
+						}
+					},
+					"end": "$",
+					"name": "comment.line.double-slash.waddle"
+				}
+			]
+		},
+		"delimiters": {
+			"patterns": [
+				{
+					"match": ",",
+					"name": "punctuation.other.comma.waddle"
+				},
+				{
+					"match": "\\.(?!\\.\\.)",
+					"name": "punctuation.other.period.waddle"
+				},
+				{
+					"match": ":(?!=)",
+					"name": "punctuation.other.colon.waddle"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"comment": "Flow control keywords",
+					"match": "\\b(else|for|if|in|return|or|and|not|while)\\b",
+					"name": "keyword.control.waddle"
+				},
+				{
+					"match": "\\b(var|let|int|string|float|buffer|char|bool)\\b",
+					"name": "keyword.types.waddle"
+				},
+				{
+					"match": "\\bfunction\\b",
+					"name": "keyword.function.waddle"
+				},
+				{
+					"match": "\\b(log)\\b",
+					"name": "keyword.statements.waddle"
+				}
+			]
+		},
+		"operators": {
+			"comment": "Note that the order here is very important!",
+			"patterns": [
+				{
+					"match": "(~|==|!=|<=|>=|<(?!<)|>(?!>))",
+					"name": "keyword.operator.comparison.waddle"
+				},
+				{
+					"match": "(=)",
+					"name": "keyword.operator.assignment.waddle"
+				},
+				{
+					"match": "(\\+|\\-|\\*|/|%|;)",
+					"name": "keyword.operator.arithmetic.waddle"
+				},
+				{
+					"match": "(&(?!\\^)|\\||\\^|&\\^|<<|>>|~)",
+					"name": "keyword.operator.arithmetic.bitwise.waddle"
+				},
+				{
+					"match": "@|\\$|(\\.\\.)",
+					"name": "keyword.operator.expression.waddle"
+				}
+			]
+		},
+		"string_placeholder": {
+			"patterns": [
+				{
+					"match": "%(\\[\\d+\\])?([\\+#\\-0\\x20]{,2}((\\d+|\\*)?(\\.?(\\d+|\\*|(\\[\\d+\\])\\*?)?(\\[\\d+\\])?)?))?[vT%tbcdoqxXUbeEfFgGsp]",
+					"name": "constant.other.placeholder.waddle"
+				}
+			]
+		}
+	}
+}

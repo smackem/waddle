@@ -1,0 +1,21 @@
+{
+    "name": "waddle",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": ">=0.9.0-pre.1"
+    },
+    "publisher": "smackem",
+    "contributes": {
+        "languages": [{
+            "id": "waddle",
+            "aliases": ["waddle"],
+            "extensions": [".waddle"]
+        }],
+        "grammars": [{
+            "language": "waddle",
+            "scopeName": "source.waddle",
+            "path": "./syntaxes/waddle.tmLanguage.json"
+        }]
+    }
+}
+
