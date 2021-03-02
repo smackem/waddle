@@ -8,6 +8,7 @@
 // - bool
 // - char (16bit unsigned)
 // - buffer (string builder)
+// - regex
 // there are built-in functions for type conversion (e.g. int(x) converts to int)
 // composite types like arrays or lists are tbd.
 // the entry point of a program is a function called main.
@@ -34,10 +35,10 @@ function getFirstChar(s: string) -> string {
     return s[0];
 }
 
-let nameToGuess: string = "Lasse"; // global binding
+let nameToGuess: string = "Lasse";  // global binding
 
 function checkName(s: string) -> bool {
-    if (s ~ nameToGuess < 2) { // ~ operator calculates levenshtein distance
+    if (s ~ nameToGuess < 2) {      // ~ operator calculates levenshtein distance
         print("close enough!");
         return true;
     }
@@ -46,13 +47,13 @@ function checkName(s: string) -> bool {
 
 function stripWhitespace(s: string) -> string {
     let buf: buffer = "";
-    for (var i: int = 0; i < s.length; i = i + 1) {
+    for (var i: int = 0; i < length(s); i = i + 1) {
         let ch = s[i];
         if (ch != ' ') {
             push(buf, ch);
         } 
     }
-    return string(buffer);   // type names are also built-in functions that convert into the target type
+    return string(buffer);          // type names are also built-in functions that convert into the target type
 }
 
 function main() {
