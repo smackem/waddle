@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace Waddle.Core.Symbols {
     /// <summary>
     /// The lexer turns the input source code into a stream of tokens. A token represents an atomic syntactical element,
@@ -7,5 +10,13 @@ namespace Waddle.Core.Symbols {
     /// Alternative implementations use regular expressions with a performance penalty.
     /// </summary>
     public class Lexer {
+        public IEnumerable<Token> Lex(CharReader input) {
+            int ch;
+            while ((ch = input.Read()) > 0) {
+                switch (ch) {
+                }
+            }
+            yield return new Token();
+        }
     }
 }

@@ -1,0 +1,46 @@
+program :=
+    functionDecl*
+
+functionDecl :=
+    FUNCTION IDENT LPAREN parameterList RPAREN block
+
+block :=
+    LBRACE statement* RBRACE
+
+statement :=
+    printStmt
+    returnStmt
+    assignStmt
+    forStmt
+    bindingStmt
+    varDeclStmt
+    ifStmt
+    matchStmt
+
+assignStmt :=
+    IDENTIFIER EQ expression
+
+expression :=
+    relationalExpr (conditionalOp relationalExpr)*
+
+conditionalOp :=
+    AND
+    OR
+
+relationalExpr :=
+    termExpr (relationalOp termExpr)?
+
+relationalOp :=
+    LT
+    GT
+    LE
+    EQ
+    ...
+
+...
+
+atom :=
+    IDENTIFIER
+    STRING
+    NUMBER
+    ...

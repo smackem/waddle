@@ -57,5 +57,11 @@ function stripWhitespace(s: string) -> string {
 }
 
 function main() {
+    var x: int;
+    x = 1;
     printHello();
+}
+
+function main() {
+    // something else
 }
