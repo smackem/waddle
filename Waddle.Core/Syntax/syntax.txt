@@ -2,10 +2,26 @@ program :=
     functionDecl*
 
 functionDecl :=
+    voidFuction
+    returnFunction
+
+voidFuction :=
     FUNCTION IDENT LPAREN parameterList RPAREN block
+
+returnFunction :=
+    FUNCTION IDENT LPAREN parameterList RPAREN ARROW type block
 
 block :=
     LBRACE statement* RBRACE
+
+parameterList :=
+    parameterDef [0..1] (",", parameterDef)*
+
+parameterDef :=
+    nameDef COLON type
+
+nameDef :=
+    (a-z,A-Z,_,1-9)[1..*]
 
 statement :=
     printStmt
@@ -16,9 +32,23 @@ statement :=
     varDeclStmt
     ifStmt
     matchStmt
+    pushStmnt
+    lengthStmt
+
+printStmt:=
+    PRINT LPAREN STRING RPAREN
+
+returnStmt:=
+    RETURN (returnFunction | varDeclStmt | nameDef)
 
 assignStmt :=
     IDENTIFIER EQ expression
+
+forStmt :=
+    FOR LPAREN iterationDef RPAREN block
+
+iterationDef :=
+    varDeclStmt SEMICOLON relationalExpr SEMICOLON assignStmt
 
 expression :=
     relationalExpr (conditionalOp relationalExpr)*
@@ -40,6 +70,9 @@ relationalOp :=
 ...
 
 atom :=
+    ARROW
+    COLON
+    SEMICOLON
     IDENTIFIER
     STRING
     NUMBER
