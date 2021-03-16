@@ -6,10 +6,10 @@ functionDecl :=
     returnFunction
 
 voidFuction :=
-    FUNCTION IDENT LPAREN parameterList RPAREN block
+    FUNCTION IDENTIFIER LPAREN parameterList RPAREN block
 
 returnFunction :=
-    FUNCTION IDENT LPAREN parameterList RPAREN ARROW type block
+    FUNCTION IDENTIFIER LPAREN parameterList RPAREN ARROW type block
 
 block :=
     LBRACE statement* RBRACE
@@ -31,12 +31,14 @@ statement :=
     matchStmt
     pushStmnt
     lengthStmt
+    levenshteinStmt
+    stringStmt
 
 printStmt:=
     PRINT LPAREN STRING RPAREN
 
 returnStmt:=
-    RETURN (returnFunction | varDeclStmt | IDENTIFIER)
+    RETURN (returnFunction | expression | IDENTIFIER)
 
 assignStmt :=
     IDENTIFIER EQ expression
@@ -51,10 +53,7 @@ bindingStmt :=
     LET IDENTIFIER COLON type (EQ expression)?
 
 varDeclStmt :=
-    VAR IDENTIFIER COLON type (EQ expression)?
-
-expression :=
-    relationalExpr (conditionalOp relationalExpr)*
+    VAR IDENTIFIER COLON type EQ expression)
 
 ifStmt :=
     IF LPAREN expression RPAREN block
@@ -68,6 +67,18 @@ matchDef :=
 matchValue :=
     STRING ARROW STRING
 
+pushStmnt :=
+    PUSH LPAREN IDENTIFIER "," (IDENTIFIER | STRING) RPAREN
+
+lengthStmt =
+    LENGTH LPAREN (IDENTIFIER | STRING) RPAREN
+
+stringStmt := 
+    F_STRING LPAREN (IDENTIFIER) RPAREN
+
+expression :=
+    relationalExpr (conditionalOp relationalExpr)*
+
 conditionalOp :=
     AND
     OR
@@ -79,6 +90,7 @@ relationalOp :=
     LT
     GT
     LE
+    GE
     EQ
     ...
 

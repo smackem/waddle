@@ -14,6 +14,8 @@ namespace Waddle.Core.Symbols {
             int ch;
             while ((ch = input.Read()) > 0) {
                 switch (ch) {
+                    case '+'
+                        yield return new Token(TokenType.Plus, ch, input.CharPosition, input.LineNumber)
                 }
             }
             yield return new Token();
