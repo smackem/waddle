@@ -1,0 +1,34 @@
+﻿
+// Syntax proposal for waddle as a JavaScript-dialect with kotlin-like type annotations
+// the language is procedural. there are no type declarations.
+// the following basic types exist:
+// - int (32bit signed)
+// - float (64bit)
+// - string
+// - bool
+// - char (16bit unsigned)
+// - buffer (string builder)
+// - regex
+// there are built-in functions for type conversion (e.g. int(x) converts to int)
+// composite types like arrays or lists are tbd.
+// the entry point of a program is a function called main.
+// braces in control-flow statements are mandatory, whitespace is not significant.
+// `var` declares a variable that can be assigned to.
+// `let` declares a binding which cannot be assigned to.
+
+function addTwoNumbers(a: int, b: int) -> int {
+    return a + b;
+}
+
+function getGreaterNumber(a: int, b: int) -> int {
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+
+function main() {
+    var x: int = addTwoNumbers(1, 2);
+    var y: int = getGreaterNumber(x, 100);
+    print(x, y);
+}
