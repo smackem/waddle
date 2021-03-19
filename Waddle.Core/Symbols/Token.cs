@@ -1,18 +1,19 @@
 namespace Waddle.Core.Symbols {
-    public struct Token {
-        private readonly TokenType type;
-        private readonly string lexeme; // if type == TokenType.Identifier -> printHello
-        private readonly int lineNumber;
-        private readonly int charPosition;
+    public readonly struct Token {
+        public TokenType Type { get; }
 
-        public Token() { }
-        
+        public string Lexeme { get; }
+
+        public int LineNumber { get; }
+
+        public int CharPosition { get; }
+
         public Token(TokenType type, string lexeme, int lineNumber, int charPosition)
         {
-            this.type = type;
-            this.lexeme = lexeme;
-            this.lineNumber = lineNumber;
-            this.charPosition = charPosition;
+            Type = type;
+            Lexeme = lexeme;
+            LineNumber = lineNumber;
+            CharPosition = charPosition;
         }
     }    
 }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waddle.Cli", "Waddle.Cli\Wa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waddle.Core", "Waddle.Core\Waddle.Core.csproj", "{C928D590-8F12-4A50-ACA6-64A68AFCF1C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waddle.Test", "Waddle.Test\Waddle.Test.csproj", "{23871123-8AC2-41CB-BBBF-D2B103A06F31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{C928D590-8F12-4A50-ACA6-64A68AFCF1C2}.Release|x64.Build.0 = Release|Any CPU
 		{C928D590-8F12-4A50-ACA6-64A68AFCF1C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{C928D590-8F12-4A50-ACA6-64A68AFCF1C2}.Release|x86.Build.0 = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|x64.Build.0 = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Debug|x86.Build.0 = Debug|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|x64.ActiveCfg = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|x64.Build.0 = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|x86.ActiveCfg = Release|Any CPU
+		{23871123-8AC2-41CB-BBBF-D2B103A06F31}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

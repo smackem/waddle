@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Waddle.Core.Symbols {
     /// <summary>
@@ -9,16 +11,63 @@ namespace Waddle.Core.Symbols {
     /// comment etc).
     /// Alternative implementations use regular expressions with a performance penalty.
     /// </summary>
-    public class Lexer {
-        public IEnumerable<Token> Lex(CharReader input) {
-            int ch;
-            while ((ch = input.Read()) > 0) {
-                switch (ch) {
-                    case '+':
-                        yield return new Token(TokenType.Plus, ch, input.CharPosition, input.LineNumber);
+    public class Lexer : IDisposable {
+        private readonly CharReader _reader;
+        private readonly StringBuilder _buffer = new StringBuilder();
+        private char _currentChar;
+
+        public Lexer(CharReader reader) {
+            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        }
+
+        public IEnumerable<Token> Lex() {
+            while (Read()) {
+                switch (_currentChar) {
+                    case { } ch when char.IsNumber(ch):
+                        yield return ReadNumber();
+                        break;
+                    case { } ch when char.IsWhiteSpace(ch):
+                        break;
+                    // uncomment when all rules are done:
+                    // default:
+                    //     throw new LexingException($"unexpected input @{_reader.LineNumber}:{_reader.CharPosition} '{_currentChar}'");
                 }
             }
-            yield return new Token();
+        }
+
+        public void Dispose() {
+            _reader?.Dispose();
+        }
+
+        private bool Read() {
+            var ch = _reader.Read();
+            if (ch < 0) {
+                return false;
+            }
+            _currentChar = (char) ch;
+            return true;
+        }
+
+        private Token ReadNumber() {
+            return ReadWhile(TokenType.Number, char.IsDigit);
+        }
+
+        Token ReadWhile(TokenType tokenType, Predicate<char> predicate) {
+            var sb = _buffer.Clear();
+            var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+
+            while (true) {
+                if (predicate(_currentChar)) {
+                    sb.Append(_currentChar);
+                } else {
+                    _reader.Unread(_currentChar);
+                    return new Token(tokenType, sb.ToString(), line, pos);
+                }
+
+                if (Read() == false) {
+                    return new Token(tokenType, sb.ToString(), line, pos);
+                }
+            }
         }
     }
 }
