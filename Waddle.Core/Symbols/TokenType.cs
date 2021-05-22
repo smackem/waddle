@@ -34,5 +34,11 @@ namespace Waddle.Core.Symbols {
         GreaterEquals,
 
         // ...
+        Multiply,
+        Divide,
+        Equal,
+        Dot,
+        Comment,
+        Unknown
     }
 }

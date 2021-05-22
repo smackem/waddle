@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Waddle.Core.Symbols {
@@ -28,6 +28,18 @@ namespace Waddle.Core.Symbols {
                         break;
                     case { } ch when char.IsWhiteSpace(ch):
                         break;
+                    case { } ch when CharIsBrace(ch):
+                        yield return ReadBrace();
+                        break;
+                    case { } ch when CharIsOperator(ch):
+                        yield return ReadOperator();
+                        break;
+                    case { } ch when CharIsTextCharacter(ch):
+                        yield return ReadText();
+                        break;
+                    case{ } ch when CharIsSeparator(ch):
+                        yield return ReadSeparator();
+                        break;
                     // uncomment when all rules are done:
                     // default:
                     //     throw new LexingException($"unexpected input @{_reader.LineNumber}:{_reader.CharPosition} '{_currentChar}'");
@@ -35,13 +47,136 @@ namespace Waddle.Core.Symbols {
             }
         }
 
+        private Token ReadSeparator()
+        {
+            var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+            return _currentChar switch
+            {
+                '.' => new Token(TokenType.Dot, _currentChar.ToString(), line, pos),
+                ':' => new Token(TokenType.Colon, _currentChar.ToString(), line, pos),
+                ';' => new Token(TokenType.Semicolon, _currentChar.ToString(), line, pos),
+                ',' => new Token(TokenType.Comma, _currentChar.ToString(), line, pos),
+                _ => new Token(TokenType.Unknown, _currentChar.ToString(), line, pos),
+            };
+        }
+
+        private readonly char[] _separators = {'.', ',', ';', ':'}; 
+        private bool CharIsSeparator(char ch)
+        {
+            return _separators.Contains(ch);
+        }
+
+        private Token ReadOperator()
+        {
+            var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+            string text = ReadContentUntilPredicate(CharIsOperator);
+            if (text == "//")
+            {
+                //Comment has been found, read until next line
+                _reader.Unread('/');
+                _reader.Unread('/');
+                return ReadWhile(TokenType.Comment, c => c != '\n');
+            }
+            TokenType tokenType = text switch
+            {
+                "+" => TokenType.Plus,
+                "-" => TokenType.Minus,
+                "*" => TokenType.Multiply,
+                "/" => TokenType.Divide,
+                "=" => TokenType.Equal,
+                "==" => TokenType.Equals,
+                "<" => TokenType.LessThan,
+                ">" => TokenType.GreaterThan,
+                "<=" => TokenType.LessEquals,
+                ">=" => TokenType.GreaterEquals,
+                "->" => TokenType.Arrow,
+                "&" => TokenType.And,
+                "|" => TokenType.Or,
+                _ => TokenType.Unknown
+            };
+            return new Token(tokenType, text, line, pos);
+        }
+
+        private readonly char[] _operators = {'+', '-', '*', '/', '|', '<', '>', '=', '&'}; 
+        private bool CharIsOperator(char ch)
+        {
+            return _operators.Contains(ch);
+        }
+
+        private Token ReadText()
+        {
+            var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+            string text = ReadContentUntilPredicate(CharIsAllowedIdentifierChar);
+            TokenType tokenType = text.ToLower() switch
+            {
+                "function" => TokenType.Function,
+                "if" => TokenType.If,
+                "var" => TokenType.Var,
+                "print" => TokenType.Print,
+                "return" => TokenType.Return,
+                { } type when TextIsTypeDefinition(type) => TokenType.Type,
+                _ => TokenType.Identifier
+            };
+
+            return new Token(tokenType, text, line, pos);
+        }
+
+        private bool TextIsTypeDefinition(string type)
+        {
+            switch (type)
+            {
+                case "int":
+                case "float":
+                case "string":
+                case "bool":
+                case "char":
+                case "buffer":
+                case "regex":
+                    return true;
+            }
+
+            return false;
+        }
+
+
+        readonly char[] _additionalAllowedCharacters = {'_', '$'};
+        private bool CharIsTextCharacter(char ch)
+        {
+            return char.IsLetter(ch) || _additionalAllowedCharacters.Contains(ch);
+        }
+
+        private bool CharIsAllowedIdentifierChar(Char ch)
+        {
+            return char.IsNumber(ch) || CharIsTextCharacter(ch);
+        }
+
         public void Dispose() {
             _reader?.Dispose();
+        }
+        
+        readonly char[] _braces = {'(', ')', '{', '}'};
+        private bool CharIsBrace(char ch)
+        {
+            return _braces.Contains(ch);
+        }
+
+        private Token ReadBrace()
+        {
+            var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+            var tokenType = _currentChar switch
+            {
+                '(' => TokenType.RParen,
+                ')' => TokenType.LParen,
+                '{' => TokenType.RBrace,
+                '}' => TokenType.LBrace,
+                _ => TokenType.Unknown
+            };
+            return new Token(tokenType, _currentChar.ToString(), line, pos);
         }
 
         private bool Read() {
             var ch = _reader.Read();
-            if (ch < 0) {
+            if (ch < 0 || ch >= 65535) {
                 return false;
             }
             _currentChar = (char) ch;
@@ -53,19 +188,23 @@ namespace Waddle.Core.Symbols {
         }
 
         Token ReadWhile(TokenType tokenType, Predicate<char> predicate) {
-            var sb = _buffer.Clear();
             var (line, pos) = (_reader.LineNumber, _reader.CharPosition);
+            return new Token(tokenType, ReadContentUntilPredicate(predicate), line, pos);
+        }
 
+        string ReadContentUntilPredicate(Predicate<char> predicate)
+        {
+            var sb = _buffer.Clear();
             while (true) {
                 if (predicate(_currentChar)) {
                     sb.Append(_currentChar);
                 } else {
                     _reader.Unread(_currentChar);
-                    return new Token(tokenType, sb.ToString(), line, pos);
+                    return sb.ToString();
                 }
 
                 if (Read() == false) {
-                    return new Token(tokenType, sb.ToString(), line, pos);
+                    return sb.ToString();
                 }
             }
         }
