@@ -1,0 +1,61 @@
+functionDecl :=
+    FUNCTION IDENTIFIER LPAREN parameter* RPAREN (ARROW type)? block
+
+block :=
+    LBRACE statement* RBRACE
+
+parameter :=
+    IDENTIFIER COLON type
+
+statement :=
+    returnStmnt
+    ifStmnt
+    assignStmnt
+    printStmnt
+
+returnStmnt :=
+    RETURN expression
+
+ifStmnt :=
+    IF LPAREN expression RPAREN BLOCK
+
+assignStmnt :=
+    VAR parameter EQUAL expression
+    IDENTIFIER EQUAL expression
+    
+printStmnt :=
+    PRINT LPAREN expression* RPAREN
+    
+expression :=
+    relationalExpression
+    functionExpression
+
+functionExpression :=
+    IDENTIFIER LPAREN expression* RPAREN
+
+relationalExpression :=
+    termExpression (relationalOperation termExpr)?
+
+relationalOperation :=
+    LT
+    GT
+
+termExpression :=
+    (IDENTIFIER | VALUE) (termOperation (IDENTIFIER | VALUE))*
+
+termOperation :=
+    PLUS
+
+atom :=
+   FUNCTION
+   IDENTIFIER
+   LPAREN
+   RPAREN
+   ARROW
+   LBRACE
+   RBRACE
+   COLON
+   VAR
+   VALUE
+   EQUAL
+   PRINT
