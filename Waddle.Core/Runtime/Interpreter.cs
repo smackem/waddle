@@ -1,4 +1,4 @@
-namespace Waddle.Core.Runtime {
-    public class Interpreter {
-    }
+namespace Waddle.Core.Runtime
+{
+    public class Interpreter { }
 }

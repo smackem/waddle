@@ -1,4 +1,4 @@
-namespace Waddle.Core.Syntax {
-    public class Parser {
-    }
+namespace Waddle.Core.Syntax
+{
+    public class Parser { }
 }

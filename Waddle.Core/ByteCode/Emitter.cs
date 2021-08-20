@@ -1,4 +1,4 @@
-namespace Waddle.Core.ByteCode {
-    public class Emitter {
-    }
+namespace Waddle.Core.ByteCode
+{
+    public class Emitter { }
 }

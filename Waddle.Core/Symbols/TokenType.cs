@@ -1,8 +1,10 @@
-namespace Waddle.Core.Symbols {
-    public enum TokenType {
+namespace Waddle.Core.Symbols
+{
+    public enum TokenType
+    {
         Identifier,
         Number,
-        String,
+        StringLiteral,
         Function,
         LParen,
         RParen,
@@ -16,7 +18,6 @@ namespace Waddle.Core.Symbols {
         Colon,
         Semicolon,
         Comma,
-        Type,
         Print,
         Push,
         Length,
@@ -32,13 +33,19 @@ namespace Waddle.Core.Symbols {
         GreaterThan,
         LessEquals,
         GreaterEquals,
+        Int,
+        Float,
+        String,
+        Bool,
+        Char,
+        Buffer,
+        Regex,
 
         // ...
         Multiply,
         Divide,
         Equal,
         Dot,
-        Comment,
-        Unknown
+        Unknown,
     }
 }
