@@ -21,14 +21,15 @@ function addTwoNumbers(a: int, b: int) -> int {
 }
 
 function getGreaterNumber(a: int, b: int) -> int {
-    if a > b {
-        return a;
+    if a > b
+    {
+        *a += 123;
     }
     return b;
 }
 
 function main() {
-    var x: int = addTwoNumbers(1, 2);
-    var y: int = getGreaterNumber(x, 100);
+    var x: int = ->addTwoNumbers(1, 2);
+    var y: int = ->getGreaterNumber(x, 100);
     print(x, y);
 }

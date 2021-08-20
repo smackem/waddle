@@ -46,6 +46,7 @@ namespace Waddle.Core.Symbols
         Divide,
         Equal,
         Dot,
+        Eof,
         Unknown,
     }
 }

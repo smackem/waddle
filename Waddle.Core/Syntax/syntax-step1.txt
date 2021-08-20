@@ -1,3 +1,6 @@
+program :=
+    functionDecl* EOF
+
 functionDecl :=
     FUNCTION IDENTIFIER LPAREN parameter* RPAREN (ARROW type)? block
 
@@ -8,54 +11,61 @@ parameter :=
     IDENTIFIER COLON type
 
 statement :=
-    returnStmnt
-    ifStmnt
-    assignStmnt
-    printStmnt
+    returnStmt
+    ifStmt
+    assignStmt
+    printStmt
+    declStmt
+    invocationStmt
 
-returnStmnt :=
+returnStmt :=
     RETURN expression
 
-ifStmnt :=
-    IF LPAREN expression RPAREN BLOCK
+ifStmt :=
+    IF expression BLOCK
 
-assignStmnt :=
-    VAR parameter EQUAL expression
+assignStmt :=
     IDENTIFIER EQUAL expression
-    
-printStmnt :=
+
+declStmt :=
+    VAR parameter EQUAL expression
+
+printStmt :=
     PRINT LPAREN expression* RPAREN
-    
+
+invocationStmt :=
+    invocationExpression
+
 expression :=
     relationalExpression
-    functionExpression
-
-functionExpression :=
-    IDENTIFIER LPAREN expression* RPAREN
 
 relationalExpression :=
-    termExpression (relationalOperation termExpr)?
+    termExpression (relationalOperation termExpression)?
 
 relationalOperation :=
+    EQ
+    NE
     LT
     GT
 
 termExpression :=
-    (IDENTIFIER | VALUE) (termOperation (IDENTIFIER | VALUE))*
+    productExpression (termOperation productExpression)*
 
 termOperation :=
     PLUS
+    MINUS
+
+productExpression :=
+    atom (productOperation atom)*
+
+productOperation :=
+    TIMES
+    DIVIDE
 
 atom :=
-   FUNCTION
-   IDENTIFIER
-   LPAREN
-   RPAREN
-   ARROW
-   LBRACE
-   RBRACE
-   COLON
-   VAR
-   VALUE
-   EQUAL
-   PRINT
+    invocationExpression
+    NUMBER
+    IDENTIFIER
+
+invocationExpression :=
+    ARROW IDENTIFIER LPAREN expression* RPAREN

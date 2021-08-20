@@ -2,10 +2,10 @@ program :=
     functionDecl*
 
 functionDecl :=
-    voidFuction
+    voidFunction
     returnFunction
 
-voidFuction :=
+voidFunction :=
     FUNCTION IDENTIFIER LPAREN parameterList RPAREN block
 
 returnFunction :=
