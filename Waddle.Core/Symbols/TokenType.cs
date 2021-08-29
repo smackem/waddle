@@ -48,5 +48,6 @@ namespace Waddle.Core.Symbols
         Dot,
         Eof,
         Unknown,
+        NotEquals
     }
 }

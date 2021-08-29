@@ -86,6 +86,7 @@ namespace Waddle.Core.Symbols
                 "*" => TokenType.Multiply,
                 "/" => TokenType.Divide,
                 "=" => TokenType.Equal,
+                "!=" => TokenType.NotEquals,
                 "==" => TokenType.Equals,
                 "<" => TokenType.LessThan,
                 ">" => TokenType.GreaterThan,
@@ -102,7 +103,7 @@ namespace Waddle.Core.Symbols
 
         private static bool CharIsOperator(char ch)
         {
-            return "+-*/|<>=&".Contains(ch);
+            return "+-*/|<>=&!".Contains(ch);
         }
 
         private Token ReadText()
