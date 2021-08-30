@@ -13,7 +13,6 @@ namespace Waddle.Core.Symbols
         Plus,
         Arrow,
         Minus,
-        Times,
         If,
         Colon,
         Semicolon,

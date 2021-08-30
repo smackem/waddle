@@ -21,9 +21,8 @@ function addTwoNumbers(a: int, b: int) -> int {
 }
 
 function getGreaterNumber(a: int, b: int) -> int {
-    if a > b
-    {
-        *a += 123;
+    if a > b {
+        return a;
     }
     return b;
 }

@@ -37,12 +37,18 @@ invocationStmt :=
     invocationExpression
 
 expression :=
-    relationalExpression
+    logicalOrExpression 
+
+logicalOrExpression :=
+    logicalAndExpression (OR logicalAndExpression)* 
+
+logicalAndExpression :=
+    relationalExpression (AND relationalExpression)* 
 
 relationalExpression :=
-    termExpression (relationalOperation termExpression)?
+    termExpression (relationalOperator termExpression)?
 
-relationalOperation :=
+relationalOperator :=
     EQ
     NE
     LT
@@ -59,7 +65,7 @@ productExpression :=
     atom (productOperation atom)*
 
 productOperation :=
-    TIMES
+    MULTIPLY
     DIVIDE
 
 atom :=

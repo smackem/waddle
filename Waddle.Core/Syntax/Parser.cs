@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Waddle.Core.Symbols;
 
 namespace Waddle.Core.Syntax
 {
     public class Parser
     {
-        private readonly Token[] _tokens;
-        private IEnumerator<Token> _enumerator;
-        private int _index = -1;
+        private readonly IEnumerator<Token> _enumerator;
 
         public Parser(IEnumerable<Token> tokens)
         {
-            _tokens = tokens.ToArray();
             _enumerator = tokens.GetEnumerator();
         }
 
@@ -32,10 +28,11 @@ namespace Waddle.Core.Syntax
 
         private void ParseFunctionDecl()
         {
-            ExpectCurrent(TokenType.Function);
+            Assert(TokenType.Function);
             Expect(TokenType.Identifier);
             Expect(TokenType.LParen);
-            while (Next().Type != TokenType.RParen)
+            Next();
+            while (CurrentToken.Type != TokenType.RParen)
             {
                 ParseParameter();
             }
@@ -47,14 +44,6 @@ namespace Waddle.Core.Syntax
             
             ParseBlock();
             // CurrentToken.Lexeme
-        }
-
-        private void ExpectCurrent(TokenType tokenType)
-        {
-            if (CurrentToken.Type != tokenType)
-            {
-                throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition} - expected {tokenType}");
-            }
         }
 
         private void ParseBlock()
@@ -71,62 +60,119 @@ namespace Waddle.Core.Syntax
         }
 
         private void ParseStatement()
-        {   
+        {
             var token = CurrentToken;
-            if (token.Type == TokenType.Return)
+            switch (token.Type)
+            {
+                case TokenType.Return:
+                    ParseReturnStatement();
+                    break;
+                case TokenType.If:
+                    ParseIfStatement();
+                    break;
+                case TokenType.Identifier:
+                    ParseAssignStatement();
+                    break;
+                case TokenType.Print:
+                    ParsePrintStatement();
+                    break;
+                case TokenType.Var:
+                    ParseDeclStatement();
+                    break;
+                case TokenType.Arrow:
+                    ParseInvocationStatement();
+                    break;
+                default:
+                    throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Statement expected ");
+            }
+        }
+
+        private void ParseDeclStatement()
+        {
+            ParseParameter();
+            Expect(TokenType.Equal);
+            ParseExpression();
+        }
+
+        private void ParsePrintStatement()
+        {
+            Expect(TokenType.LParen);
+            while (Next().Type != TokenType.RParen)
             {
                 ParseExpression();
             }
-            else if (token.Type == TokenType.If)
-            {
-                ParseExpression();
-                ParseBlock();
-            }
-            else if (token.Type == TokenType.Identifier)
-            {
-                Expect(TokenType.Equal);
-                ParseExpression();
-            }
-            else if (token.Type == TokenType.Print)
-            {
-                Expect(TokenType.LParen);
-                while (Next().Type != TokenType.RParen)
-                {
-                    ParseExpression();
-                }
-            }
-            else if (token.Type == TokenType.Var)
-            {
-                ParseParameter();
-                Expect(TokenType.Equal);
-                ParseExpression();
-            }
-            else if (token.Type == TokenType.Arrow)
-            {
-                Expect(TokenType.Identifier);
-                Expect(TokenType.LParen);
-                while (Next().Type != TokenType.RParen)
-                {
-                    ParseExpression();
-                }
-            }
-            else
-            {
-                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Statement expected ");   
-            }
+        }
+
+        private void ParseAssignStatement()
+        {
+            Expect(TokenType.Equal);
+            ParseExpression();
+        }
+
+        private void ParseInvocationStatement()
+        {
+            ParseInvocationExpression();
+        }
+
+        private void ParseReturnStatement()
+        {
+            ParseExpression();
+        }
+
+        private void ParseIfStatement()
+        {
+            ParseExpression();
+            ParseBlock();
         }
 
         private void ParseExpression()
         {
-            ParseAtom();
-            var token = _tokens[_index + 1];
-            if (IsOperator(token))
+            ParseLogicalOrExpression();
+        }
+
+        private void ParseLogicalOrExpression()
+        {
+            ParseLogicalAndExpression();
+            while (true)
             {
-                ParseExpression();
+                if (CurrentToken.Type != TokenType.Or)
+                {
+                    return;
+                }
+
+                Next();
+                ParseLogicalAndExpression();
             }
         }
 
-        private bool IsOperator(Token token)
+        private void ParseLogicalAndExpression()
+        {
+            ParseRelationalExpression();
+            while (true)
+            {
+                if (CurrentToken.Type != TokenType.And)
+                {
+                    return;
+                }
+
+                Next();
+                ParseRelationalExpression();
+            }
+        }
+
+        private void ParseRelationalExpression()
+        {
+            ParseTermExpression();
+            if (IsRelationalOperator(CurrentToken) == false)
+            {
+                return;
+            }
+
+            Next();
+            ParseTermExpression();
+        }
+
+        private static bool IsRelationalOperator(Token token)
         {
             switch (token.Type)
             {
@@ -136,16 +182,57 @@ namespace Waddle.Core.Syntax
                 case TokenType.LessThan:
                 case TokenType.GreaterEquals:
                 case TokenType.GreaterThan:
-                case TokenType.Plus:
-                case TokenType.Minus:
-                case TokenType.Multiply:
-                case TokenType.Divide:
-                case TokenType.And:
-                case TokenType.Or:
                     return true;
             }
 
             return false;
+        }
+
+        private void ParseTermExpression()
+        {
+            ParseProductExpression();
+            while (true)
+            {
+                if (IsTermOperator(CurrentToken) == false)
+                {
+                    return;
+                }
+
+                Next();
+                ParseProductExpression();
+            }
+        }
+
+        private static bool IsTermOperator(Token token)
+        {
+            switch (token.Type)
+            {
+                case TokenType.Plus:
+                case TokenType.Minus:
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ParseProductExpression()
+        {
+            ParseAtom();
+            while (true)
+            {
+                if (IsProductOperator(CurrentToken) == false)
+                {
+                    return;
+                }
+
+                Next();
+                ParseAtom();
+            }
+        }
+
+        private static bool IsProductOperator(Token currentToken)
+        {
+            return currentToken.Type is TokenType.Multiply or TokenType.Divide;
         }
 
         private void ParseAtom()
@@ -153,12 +240,7 @@ namespace Waddle.Core.Syntax
             var token = Next();
             if (token.Type == TokenType.Arrow)
             {
-                Expect(TokenType.Identifier);
-                Expect(TokenType.LParen);
-                while (Next().Type != TokenType.RParen)
-                {
-                    ParseExpression();
-                }
+                ParseInvocationExpression();
             }
             else if (token.Type == TokenType.Number)
             {
@@ -174,11 +256,22 @@ namespace Waddle.Core.Syntax
             }
         }
 
-        private void ParseParameter()
+        private void ParseInvocationExpression()
         {
             Expect(TokenType.Identifier);
+            Expect(TokenType.LParen);
+            while (Next().Type != TokenType.RParen)
+            {
+                ParseExpression();
+            }
+        }
+
+        private void ParseParameter()
+        {
+            Assert(TokenType.Identifier);
             Expect(TokenType.Colon);
             ExpectTypeToken();
+            Next();
         }
 
         private void ExpectTypeToken()
@@ -205,11 +298,19 @@ namespace Waddle.Core.Syntax
             }
         }
 
+        private void Assert(TokenType tokenType)
+        {
+            var token = CurrentToken;
+            if (token.Type != tokenType)
+            {
+                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - expected {tokenType}");
+            }
+        }
+
         private Token CurrentToken => _enumerator.Current;
 
         private Token Next()
         {
-            _index++;
             return _enumerator.MoveNext()
                 ? _enumerator.Current
                 : new Token(TokenType.Eof, string.Empty, 0, 0);
