@@ -2,7 +2,7 @@ program :=
     functionDecl* EOF
 
 functionDecl :=
-    FUNCTION IDENTIFIER LPAREN parameter* RPAREN (ARROW type)? block
+    FUNCTION IDENTIFIER LPAREN (parameter (COMMA parameter *))? RPAREN (ARROW type)? block
 
 block :=
     LBRACE statement* RBRACE

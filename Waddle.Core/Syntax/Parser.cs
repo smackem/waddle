@@ -20,9 +20,11 @@ namespace Waddle.Core.Syntax
 
         private void ParseProgram()
         {
-            while (Next().Type != TokenType.Eof)
+            Next();
+            while (CurrentToken.Type != TokenType.Eof)
             {
                 ParseFunctionDecl();
+                Next();
             }
         }
 
@@ -37,7 +39,8 @@ namespace Waddle.Core.Syntax
                 ParseParameter();
             }
 
-            if (Next().Type == TokenType.Arrow)
+            Next();
+            if (CurrentToken.Type == TokenType.Arrow)
             {
                 ExpectTypeToken();
             }
@@ -52,10 +55,12 @@ namespace Waddle.Core.Syntax
             {
                 Expect(TokenType.LBrace);
             }
-            
-            while (Next().Type != TokenType.RBrace)
+
+            Next();
+            while (CurrentToken.Type != TokenType.RBrace)
             {
                 ParseStatement();
+                Next();
             }
         }
 
@@ -66,41 +71,49 @@ namespace Waddle.Core.Syntax
             {
                 case TokenType.Return:
                     ParseReturnStatement();
+                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.If:
                     ParseIfStatement();
                     break;
                 case TokenType.Identifier:
                     ParseAssignStatement();
+                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Print:
                     ParsePrintStatement();
+                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Var:
                     ParseDeclStatement();
+                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Arrow:
                     ParseInvocationStatement();
+                    Assert(TokenType.Semicolon);
                     break;
                 default:
-                    throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Statement expected ");
+                    throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Statement expected - found {token.Type}");
             }
         }
 
         private void ParseDeclStatement()
         {
+            Next();
             ParseParameter();
-            Expect(TokenType.Equal);
+            Assert(TokenType.Equal);
             ParseExpression();
         }
 
         private void ParsePrintStatement()
         {
             Expect(TokenType.LParen);
-            while (Next().Type != TokenType.RParen)
+            while (CurrentToken.Type != TokenType.RParen)
             {
                 ParseExpression();
             }
+
+            Next();
         }
 
         private void ParseAssignStatement()
@@ -140,7 +153,6 @@ namespace Waddle.Core.Syntax
                     return;
                 }
 
-                Next();
                 ParseLogicalAndExpression();
             }
         }
@@ -155,7 +167,6 @@ namespace Waddle.Core.Syntax
                     return;
                 }
 
-                Next();
                 ParseRelationalExpression();
             }
         }
@@ -168,7 +179,6 @@ namespace Waddle.Core.Syntax
                 return;
             }
 
-            Next();
             ParseTermExpression();
         }
 
@@ -197,8 +207,7 @@ namespace Waddle.Core.Syntax
                 {
                     return;
                 }
-
-                Next();
+                
                 ParseProductExpression();
             }
         }
@@ -217,6 +226,7 @@ namespace Waddle.Core.Syntax
 
         private void ParseProductExpression()
         {
+            Next();
             ParseAtom();
             while (true)
             {
@@ -225,7 +235,6 @@ namespace Waddle.Core.Syntax
                     return;
                 }
 
-                Next();
                 ParseAtom();
             }
         }
@@ -237,22 +246,21 @@ namespace Waddle.Core.Syntax
 
         private void ParseAtom()
         {
-            var token = Next();
-            if (token.Type == TokenType.Arrow)
+            if (CurrentToken.Type == TokenType.Arrow)
             {
                 ParseInvocationExpression();
             }
-            else if (token.Type == TokenType.Number)
+            else if (CurrentToken.Type == TokenType.Number)
             {
-                //nichts weiter zu lesen   
+                Next();
             }
-            else if (token.Type == TokenType.Identifier)
+            else if (CurrentToken.Type == TokenType.Identifier)
             {
-                //nichts weiter zu lesen   
+                Next();
             }
             else
             {
-                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - atom expected ");   
+                throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition} - atom expected - found {CurrentToken.Type}");   
             }
         }
 
@@ -260,10 +268,11 @@ namespace Waddle.Core.Syntax
         {
             Expect(TokenType.Identifier);
             Expect(TokenType.LParen);
-            while (Next().Type != TokenType.RParen)
+            while (CurrentToken.Type != TokenType.RParen)
             {
                 ParseExpression();
             }
+            Next();
         }
 
         private void ParseParameter()
@@ -272,6 +281,11 @@ namespace Waddle.Core.Syntax
             Expect(TokenType.Colon);
             ExpectTypeToken();
             Next();
+            if (CurrentToken.Type == TokenType.Comma)
+            {
+                Next();
+                ParseParameter();
+            }
         }
 
         private void ExpectTypeToken()
@@ -286,7 +300,7 @@ namespace Waddle.Core.Syntax
                 case TokenType.Char:
                     return;
             }
-            throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Type expected ");
+            throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Type expected - found {token.Type}");
         }
         
         private void Expect(TokenType tokenType)
@@ -294,7 +308,7 @@ namespace Waddle.Core.Syntax
             var token = Next();
             if (token.Type != tokenType)
             {
-                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - expected {tokenType}");
+                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - expected {tokenType} - found {token.Type}");
             }
         }
 
@@ -303,11 +317,11 @@ namespace Waddle.Core.Syntax
             var token = CurrentToken;
             if (token.Type != tokenType)
             {
-                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - expected {tokenType}");
+                throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - expected {tokenType} - found {token.Type}");
             }
         }
 
-        private Token CurrentToken => _enumerator.Current;
+        private Token CurrentToken => _enumerator.Current ?? new Token(TokenType.Eof, string.Empty, 0, 0);
 
         private Token Next()
         {
