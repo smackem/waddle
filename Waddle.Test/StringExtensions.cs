@@ -8,6 +8,11 @@ namespace Waddle.Test
 {
     internal static class StringExtensions
     {
+        /// <summary>
+        /// Trims the indentation whitespace common to all lines in <paramref name="str"/>
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static CharReader CharwiseWithTrimmedLines(this string str)
         {
             return new CharReader(new StringReader(str.AutoTrim()));

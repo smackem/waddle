@@ -2,7 +2,10 @@ program :=
     functionDecl* EOF
 
 functionDecl :=
-    FUNCTION IDENTIFIER LPAREN (parameter (COMMA parameter *))? RPAREN (ARROW type)? block
+    FUNCTION IDENTIFIER LPAREN parameterList? RPAREN (ARROW type)? block
+
+parameterList :=
+    parameter (COMMA parameter)*
 
 block :=
     LBRACE statement* RBRACE
@@ -11,12 +14,12 @@ parameter :=
     IDENTIFIER COLON type
 
 statement :=
-    returnStmt
+    returnStmt SEMICOLON
     ifStmt
-    assignStmt
-    printStmt
-    declStmt
-    invocationStmt
+    assignStmt SEMICOLON
+    printStmt SEMICOLON
+    declStmt SEMICOLON
+    invocationStmt SEMICOLON
 
 returnStmt :=
     RETURN expression
@@ -74,4 +77,7 @@ atom :=
     IDENTIFIER
 
 invocationExpression :=
-    ARROW IDENTIFIER LPAREN expression* RPAREN
+    ARROW IDENTIFIER LPAREN argumentList? RPAREN
+
+argumentList :=
+    expression (COMMA expression)*

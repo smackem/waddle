@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Waddle.Core.Symbols;
+using Waddle.Core.Syntax.Ast;
 
 namespace Waddle.Core.Syntax
 {
@@ -13,22 +14,25 @@ namespace Waddle.Core.Syntax
             _enumerator = tokens.GetEnumerator();
         }
 
-        public void Parse()
-        {
-            ParseProgram();
-        }
-
-        private void ParseProgram()
+        public Ast.Syntax Parse()
         {
             Next();
-            while (CurrentToken.Type != TokenType.Eof)
-            {
-                ParseFunctionDecl();
-                Next();
-            }
+            return ParseProgram();
         }
 
-        private void ParseFunctionDecl()
+        private Ast.Syntax ParseProgram()
+        {
+            var functionDecls = new List<FunctionDeclSyntax>();
+            var startToken = CurrentToken;
+            while (CurrentToken.Type != TokenType.Eof)
+            {
+                functionDecls.Add(ParseFunctionDecl());
+            }
+
+            return new ProgramSyntax(startToken, functionDecls);
+        }
+
+        private FunctionDeclSyntax ParseFunctionDecl()
         {
             Assert(TokenType.Function);
             Expect(TokenType.Identifier);
@@ -44,7 +48,7 @@ namespace Waddle.Core.Syntax
             {
                 ExpectTypeToken();
             }
-            
+
             ParseBlock();
             // CurrentToken.Lexeme
         }
@@ -60,8 +64,8 @@ namespace Waddle.Core.Syntax
             while (CurrentToken.Type != TokenType.RBrace)
             {
                 ParseStatement();
-                Next();
             }
+            Next();
         }
 
         private void ParseStatement()
@@ -71,30 +75,27 @@ namespace Waddle.Core.Syntax
             {
                 case TokenType.Return:
                     ParseReturnStatement();
-                    Assert(TokenType.Semicolon);
-                    break;
-                case TokenType.If:
-                    ParseIfStatement();
                     break;
                 case TokenType.Identifier:
                     ParseAssignStatement();
-                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Print:
                     ParsePrintStatement();
-                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Var:
                     ParseDeclStatement();
-                    Assert(TokenType.Semicolon);
                     break;
                 case TokenType.Arrow:
                     ParseInvocationStatement();
-                    Assert(TokenType.Semicolon);
                     break;
+                case TokenType.If:
+                    ParseIfStatement();
+                    return;
                 default:
                     throw new Exception($"syntax error @({token.LineNumber}:{token.CharPosition} - Statement expected - found {token.Type}");
             }
+            Assert(TokenType.Semicolon);
+            Next();
         }
 
         private void ParseDeclStatement()

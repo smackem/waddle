@@ -64,7 +64,7 @@ namespace Waddle.Test
         {
             var tokens = new[]
             {
-                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.RBrace
+                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Semicolon, TokenType.RBrace
             };
             Parser p = new Parser(tokens.Select(x => new Token(x, "", 0, 0)));
             
@@ -76,8 +76,8 @@ namespace Waddle.Test
         {
             var tokens = new[]
             {
-                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.RBrace,
-                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.RBrace
+                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Semicolon, TokenType.RBrace,
+                TokenType.Function, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Arrow, TokenType.Int, TokenType.LBrace, TokenType.Arrow, TokenType.Identifier, TokenType.LParen, TokenType.RParen, TokenType.Semicolon, TokenType.RBrace
             };
             Parser p = new Parser(tokens.Select(x => new Token(x, "", 0, 0)));
             
