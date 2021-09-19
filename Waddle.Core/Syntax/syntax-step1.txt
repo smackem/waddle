@@ -34,7 +34,7 @@ declStmt :=
     VAR parameter EQUAL expression
 
 printStmt :=
-    PRINT LPAREN expression* RPAREN
+    PRINT LPAREN argumentList? RPAREN
 
 invocationStmt :=
     invocationExpression
