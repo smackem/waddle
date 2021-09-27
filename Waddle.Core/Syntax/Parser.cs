@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Xsl;
 using Waddle.Core.Symbols;
 using Waddle.Core.Syntax.Ast;
 
@@ -128,23 +129,20 @@ namespace Waddle.Core.Syntax
             return new PrintStmtSyntax(startToken, lParenToken, argumentListSyntax);
         }
 
-        private ArgumentListSyntax? ParseExpressionList()
+        private IList<ExpressionSyntax> ParseExpressionList()
         {
-            var startToken = CurrentToken;
-            if (CurrentToken.Type == TokenType.RParen)
-            {
-                return null;
-            }
-            var firstExpression = ParseExpression();
-            var addArgs = new List<AdditionalArgument>();
+            var expressions = new List<ExpressionSyntax>();
             while (CurrentToken.Type != TokenType.RParen)
             {
-                var addStartToken = CurrentToken;
-                var additionExpression = ParseExpression();
-                addArgs.Add(new AdditionalArgument(addStartToken, additionExpression));
+                expressions.Add(ParseExpression());
+
+                if (CurrentToken.Type == TokenType.Comma)
+                {
+                    Next();
+                }
             }
 
-            return new ArgumentListSyntax(startToken, firstExpression, addArgs);
+            return expressions;
         }
 
         private AssignStmtSyntax ParseAssignStatement()
@@ -248,21 +246,23 @@ namespace Waddle.Core.Syntax
             return false;
         }
 
-        private TermExpressionSyntax ParseTermExpression()
+        private ExpressionSyntax ParseTermExpression()
         {
             var startToken = CurrentToken;
-            var firstProductExpression = ParseProductExpression();
-            var additionalExpressions = new List<ExpressionOperator>();
+            var left = ParseProductExpression();
             while (true)
             {
-                if (IsTermOperator(CurrentToken) == false)
+                switch (CurrentToken.Type)
                 {
-                    return new TermExpressionSyntax(startToken, firstProductExpression, additionalExpressions);
+                    case TokenType.Plus:
+                        left = new PlusExpressionSyntax(startToken, left, ParseProductExpression());
+                        break;
+                    case TokenType.Minus:
+                        left = new MinusExpressionSyntax(startToken, left, ParseProductExpression());
+                        break;
+                    default:
+                        return left;
                 }
-                
-                var operatorToken = CurrentToken;
-                var additionalProductExpression = ParseProductExpression();
-                additionalExpressions.Add(new ExpressionOperator(operatorToken, additionalProductExpression));
             }
         }
 

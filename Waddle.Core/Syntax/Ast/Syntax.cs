@@ -11,11 +11,11 @@ namespace Waddle.Core.Syntax.Ast
     public record FunctionDeclSyntax(Token StartToken, string Name, ParameterListSyntax? Parameters, TypeSyntax? ReturnType, BlockSyntax Body);
 
     public record TypeSyntax(Token StartToken, Token TypeToken) : Syntax(StartToken);
-
+    
     public record ParameterListSyntax
         (Token StartToken, IEnumerable<ParameterDecSyntax> Parameters) : Syntax(StartToken);
 
-    public record ParameterDecSyntax(Token StartToken, Token ColonToken, TypeSyntax TypeSyntax) : Syntax(StartToken);
+    public record ParameterDecSyntax(Token StartToken, string Name, Token ColonToken, TypeSyntax TypeSyntax) : Syntax(StartToken);
 
     public record BlockSyntax(Token StartToken, IEnumerable<StatementSyntax> Statements) : Syntax(StartToken);
 
@@ -27,99 +27,62 @@ namespace Waddle.Core.Syntax.Ast
 
     public record AssignStmtSyntax (Token StartToken, Token EqualToken, ExpressionSyntax Expression) : StatementSyntax(StartToken);
 
-    public record PrintStmtSyntax (Token StartToken, Token LParenToken, ArgumentListSyntax? Arguments) : StatementSyntax(StartToken);
+    public record PrintStmtSyntax (Token StartToken, Token LParenToken, IEnumerable<ExpressionSyntax> Arguments) : StatementSyntax(StartToken);
 
     public record DeclStmtSyntax(Token StartToken, ParameterDecSyntax ParameterDecSyntax, Token EqualToken,  ExpressionSyntax Expression) : StatementSyntax(StartToken);
 
     public record InvocationStmtSyntax(Token StartToken, InvocationExpressionSyntax Expression) : StatementSyntax(StartToken);
 
-    public class ExpressionBase
-    {
-        public Token StartToken { get; set; }
+    public abstract record ExpressionSyntax(Token StartToken) : Syntax(StartToken);
 
-        public ExpressionBase(Token startToken)
-        {
-            this.StartToken = startToken;
-        }
-    }
-    
-    public class ExpressionSyntax : ExpressionBase
-    {
-        public ExpressionBase FirstExpression { get; set;}
-        public IEnumerable<ExpressionOperator> InnerExpressions { get; set;}
+    public record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right);
 
-        public ExpressionSyntax(Token startToken, ExpressionBase firstExpression,
-            IEnumerable<ExpressionOperator> innerExpressions): base(startToken)
-        {
-            this.FirstExpression = firstExpression;
-            this.InnerExpressions = innerExpressions;
-        }
+    public record TermExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, TermOperator Operator)
+        : BinaryExpressionSyntax(StartToken, Left, Right);
+
+    public enum TermOperator
+    {
+        Plus,
+        Minus
     }
 
-    public record ExpressionOperator(Token OperatorToken, ExpressionBase Expression);
+    public record LogicalExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, LogicalOperator Operator)
+        : BinaryExpressionSyntax(StartToken, Left, Right);
 
-    public class LogicalOrExpressionSyntax : ExpressionSyntax
+    public enum LogicalOperator
     {
-        public LogicalOrExpressionSyntax(Token startToken, LogicalAndExpressionSyntax firstExpression, IEnumerable<ExpressionOperator> innerExpressions) : base(startToken, firstExpression, innerExpressions)
-        {
-            
-        }
-    };
-    
-    public class LogicalAndExpressionSyntax : ExpressionSyntax
-    {
-        public LogicalAndExpressionSyntax(Token startToken, RelationalExpressionSyntax firstExpression, IEnumerable<ExpressionOperator> innerExpressions) : base(startToken, firstExpression, innerExpressions)
-        {
-            
-        }
-    };
-    
-    public class RelationalExpressionSyntax : ExpressionSyntax
-    {
-        public RelationalExpressionSyntax(Token startToken, TermExpressionSyntax firstExpression, IEnumerable<ExpressionOperator> innerExpressions) : base(startToken, firstExpression, innerExpressions)
-        {
-            
-        }
-    };
-
-    public class TermExpressionSyntax : ExpressionSyntax
-    {
-        public TermExpressionSyntax(Token startToken, ProductExpressionSyntax firstExpression, IEnumerable<ExpressionOperator> innerExpressions) : base(startToken, firstExpression, innerExpressions)
-        {
-            
-        }
-    };
-    
-    public class ProductExpressionSyntax : ExpressionSyntax
-    {
-        public ProductExpressionSyntax(Token startToken, AtomSyntax firstExpression, IEnumerable<ExpressionOperator> innerExpressions) : base(startToken, firstExpression, innerExpressions)
-        {
-            
-        }
-    };
-
-    public class AtomSyntax: ExpressionBase
-    {
-        public AtomSyntax(Token startToken) : base(startToken){}
+        And,
+        Or,
     }
 
-    public class InvocationExpressionSyntax : AtomSyntax
+    public record RelationalExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, RelationalOperator Operator)
+        : BinaryExpressionSyntax(StartToken, Left, Right);
+
+    public enum RelationalOperator
     {
-        public Token Identifier { get; }
-        public Token LParen { get; }
-        public ArgumentListSyntax? Arguments { get; }
-        public Token RParen { get; }
-
-        public InvocationExpressionSyntax(Token startToken, Token identifier, Token lParen, ArgumentListSyntax? arguments, Token rParen) : base(startToken)
-        {
-            this.Identifier = identifier;
-            this.LParen = lParen;
-            this.Arguments = arguments;
-            this.RParen = rParen;
-        }
+        Eq,
+        Ne,
+        Gt,
+        Ge,
+        Lt,
+        Le,
     }
-    
-    public record ArgumentListSyntax(Token StartToken, ExpressionSyntax? Expression, IEnumerable<AdditionalArgument>? AdditionalArguments) : Syntax(StartToken);
 
-    public record AdditionalArgument(Token CommaToken, ExpressionSyntax Expression);
+    public record ProductExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, ProductOperator Operator)
+        : BinaryExpressionSyntax(StartToken, Left, Right);
+
+    public enum ProductOperator
+    {
+        Times,
+        Divide,
+    }
+
+    public record AtomSyntax(Token StartToken) : ExpressionSyntax(StartToken);
+
+    public record InvocationExpressionSyntax(
+        Token Identifier,
+        Token LParen,
+        IEnumerable<ExpressionSyntax> Arguments,
+        Token RParen
+    ) : AtomSyntax(Identifier);
 }
