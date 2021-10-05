@@ -84,12 +84,12 @@ namespace Waddle.Core.Syntax.Ast
 
                 public string Visit(StringValue v, object state)
                 {
-                    return v;
+                    return v.ToString();
                 }
 
                 public string Visit(BoolValue v, object state)
                 {
-                    return v ? "on" : "off";
+                    return "on";
                 }
 
                 public string Visit(DecimalValue v, object state)

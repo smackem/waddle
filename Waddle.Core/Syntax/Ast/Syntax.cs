@@ -8,13 +8,10 @@ namespace Waddle.Core.Syntax.Ast
     public record ProgramSyntax
         (Token StartToken, IEnumerable<FunctionDeclSyntax> FunctionDeclarations) : Syntax(StartToken);
 
-    public record FunctionDeclSyntax(Token StartToken, string Name, ParameterListSyntax? Parameters, TypeSyntax? ReturnType, BlockSyntax Body);
+    public record FunctionDeclSyntax(Token StartToken, string Name, IEnumerable<ParameterDecSyntax> Parameters, TypeSyntax? ReturnType, BlockSyntax Body);
 
     public record TypeSyntax(Token StartToken, Token TypeToken) : Syntax(StartToken);
     
-    public record ParameterListSyntax
-        (Token StartToken, IEnumerable<ParameterDecSyntax> Parameters) : Syntax(StartToken);
-
     public record ParameterDecSyntax(Token StartToken, string Name, Token ColonToken, TypeSyntax TypeSyntax) : Syntax(StartToken);
 
     public record BlockSyntax(Token StartToken, IEnumerable<StatementSyntax> Statements) : Syntax(StartToken);
@@ -35,7 +32,7 @@ namespace Waddle.Core.Syntax.Ast
 
     public abstract record ExpressionSyntax(Token StartToken) : Syntax(StartToken);
 
-    public record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right);
+    public record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right): ExpressionSyntax(StartToken);
 
     public record TermExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, TermOperator Operator)
         : BinaryExpressionSyntax(StartToken, Left, Right);

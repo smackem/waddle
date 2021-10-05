@@ -131,18 +131,21 @@ namespace Waddle.Core.Syntax
 
         private IList<ExpressionSyntax> ParseExpressionList()
         {
-            var expressions = new List<ExpressionSyntax>();
-            while (CurrentToken.Type != TokenType.RParen)
+            var result = new List<ExpressionSyntax>();
+            
+            if (CurrentToken.Type == TokenType.RParen)
             {
-                expressions.Add(ParseExpression());
-
-                if (CurrentToken.Type == TokenType.Comma)
-                {
-                    Next();
-                }
+                return result;
+            }
+            
+            result.Add(ParseExpression());
+            while (CurrentToken.Type == TokenType.Comma)
+            {
+                Next();
+                result.Add(ParseExpression());
             }
 
-            return expressions;
+            return result;
         }
 
         private AssignStmtSyntax ParseAssignStatement()
@@ -177,88 +180,24 @@ namespace Waddle.Core.Syntax
 
         private ExpressionSyntax ParseExpression()
         {
-            var startToken = CurrentToken;
-            return new ExpressionSyntax(startToken, ParseLogicalOrExpression(), new List<ExpressionOperator>());
+            return ParseLogicalExpression();
         }
 
-        private LogicalOrExpressionSyntax ParseLogicalOrExpression()
+        private ExpressionSyntax ParseLogicalExpression()
         {
             var startToken = CurrentToken;
-            var firstLogicalAndExpression = ParseLogicalAndExpression();
-            var additionalExpressions = new List<ExpressionOperator>();
-            while (true)
-            {
-                if (CurrentToken.Type != TokenType.Or)
-                {
-                    return new LogicalOrExpressionSyntax(startToken, firstLogicalAndExpression, additionalExpressions);
-                }
-                var operatorToken = CurrentToken;
-                LogicalAndExpressionSyntax additionalExpression = ParseLogicalAndExpression();
-                additionalExpressions.Add(new ExpressionOperator(operatorToken, additionalExpression));
-            }
-        }
-
-        private LogicalAndExpressionSyntax ParseLogicalAndExpression()
-        {
-            var startToken = CurrentToken;
-            var firstRelationExpression = ParseRelationalExpression();
-            var additionalExpressions = new List<ExpressionOperator>();
-            while (true)
-            {
-                if (CurrentToken.Type != TokenType.And)
-                {
-                    return new LogicalAndExpressionSyntax(startToken, firstRelationExpression, additionalExpressions);
-                }
-
-                var operatorToken = CurrentToken;
-                var additionalExpression = ParseRelationalExpression();
-                additionalExpressions.Add(new ExpressionOperator(operatorToken, additionalExpression));
-            }
-        }
-
-        private RelationalExpressionSyntax ParseRelationalExpression()
-        {
-            var startToken = CurrentToken;
-            var firstTermExpression = ParseTermExpression();
-            if (IsRelationalOperator(CurrentToken) == false)
-            {
-                return new RelationalExpressionSyntax(startToken, firstTermExpression, new List<ExpressionOperator>());
-            }
-
-            var operatorToken = CurrentToken;
-            var additionalTermExpression = ParseTermExpression();
-            return new RelationalExpressionSyntax(startToken, firstTermExpression, new List<ExpressionOperator>{new ExpressionOperator(operatorToken, additionalTermExpression)});
-        }
-
-        private static bool IsRelationalOperator(Token token)
-        {
-            switch (token.Type)
-            {
-                case TokenType.Equals:
-                case TokenType.NotEquals:
-                case TokenType.LessEquals:
-                case TokenType.LessThan:
-                case TokenType.GreaterEquals:
-                case TokenType.GreaterThan:
-                    return true;
-            }
-
-            return false;
-        }
-
-        private ExpressionSyntax ParseTermExpression()
-        {
-            var startToken = CurrentToken;
-            var left = ParseProductExpression();
+            ExpressionSyntax left = ParseRelationalExpression();
             while (true)
             {
                 switch (CurrentToken.Type)
                 {
-                    case TokenType.Plus:
-                        left = new PlusExpressionSyntax(startToken, left, ParseProductExpression());
+                    case TokenType.Or:
+                        left = new LogicalExpressionSyntax(startToken, left, ParseRelationalExpression(),
+                            LogicalOperator.Or);
                         break;
-                    case TokenType.Minus:
-                        left = new MinusExpressionSyntax(startToken, left, ParseProductExpression());
+                    case TokenType.And:
+                        left = new LogicalExpressionSyntax(startToken, left, ParseRelationalExpression(),
+                            LogicalOperator.And);
                         break;
                     default:
                         return left;
@@ -266,44 +205,83 @@ namespace Waddle.Core.Syntax
             }
         }
 
-        private static bool IsTermOperator(Token token)
-        {
-            switch (token.Type)
-            {
-                case TokenType.Plus:
-                case TokenType.Minus:
-                    return true;
-            }
-
-            return false;
-        }
-
-        private ProductExpressionSyntax ParseProductExpression()
+        private ExpressionSyntax ParseRelationalExpression()
         {
             var startToken = CurrentToken;
-            Next();
-            var firstAtom = ParseAtom();
-            var additionalAtoms = new List<ExpressionOperator>();
+            ExpressionSyntax left = ParseTermExpression();
             while (true)
             {
-                if (IsProductOperator(CurrentToken) == false)
+                switch (CurrentToken.Type)
                 {
-                    return new ProductExpressionSyntax(startToken, firstAtom, additionalAtoms);
+                    case TokenType.Equals:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Eq);
+                        break;
+                    case TokenType.NotEquals:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Ne);
+                        break;
+                    case TokenType.LessEquals:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Le);
+                        break;
+                    case TokenType.LessThan:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Lt);
+                        break;
+                    case TokenType.GreaterEquals:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Ge);
+                        break;
+                    case TokenType.GreaterThan:
+                        left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Gt);
+                        break;
+                    default:
+                        return left;
                 }
-                
-                var operatorToken = CurrentToken;
-                var additionalAtom = ParseAtom();
-                additionalAtoms.Add(new ExpressionOperator(operatorToken, additionalAtom));
             }
         }
 
-        private static bool IsProductOperator(Token currentToken)
+        private ExpressionSyntax ParseTermExpression()
         {
-            return currentToken.Type is TokenType.Multiply or TokenType.Divide;
+            var startToken = CurrentToken;
+            ExpressionSyntax left = ParseProductExpression();
+            while (true)
+            {
+                switch (CurrentToken.Type)
+                {
+                    case TokenType.Plus:
+                        left = new TermExpressionSyntax(startToken, left, ParseProductExpression(), TermOperator.Plus);
+                        break;
+                    case TokenType.Minus:
+                        left = new TermExpressionSyntax(startToken, left, ParseProductExpression(), TermOperator.Minus);
+                        break;
+                    default:
+                        return left;
+                }
+            }
+        }
+
+        
+
+        private ExpressionSyntax ParseProductExpression()
+        {
+            var startToken = CurrentToken;
+            ExpressionSyntax left = ParseAtom();
+            while (true)
+            {
+                switch (CurrentToken.Type)
+                {
+                    case TokenType.Multiply:
+                        left = new ProductExpressionSyntax(startToken, left, ParseAtom(), ProductOperator.Times);
+                        break;
+                    case TokenType.Divide:
+                        left = new ProductExpressionSyntax(startToken, left, ParseAtom(), ProductOperator.Divide);
+                        break;
+                    default:
+                        return left;
+                }
+            }
         }
 
         private AtomSyntax ParseAtom()
         {
+            Next();
             if (CurrentToken.Type == TokenType.Arrow)
             {
                 return ParseInvocationExpression();
@@ -316,33 +294,30 @@ namespace Waddle.Core.Syntax
             }
             else
             {
-                throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition} - atom expected - found {CurrentToken.Type}");   
+                throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");   
             }
             
             Token atomToken = CurrentToken;
-            Next();
             return new AtomSyntax(atomToken);
         }
 
         private InvocationExpressionSyntax ParseInvocationExpression()
         {
-            var startToken = CurrentToken;
             var identToken = Expect(TokenType.Identifier);
             var lParenToken = Expect(TokenType.LParen);
             var exprList = ParseExpressionList();
             var rParenToken = CurrentToken;
             Next();
-            return new InvocationExpressionSyntax(startToken, identToken, lParenToken, exprList, rParenToken);
+            return new InvocationExpressionSyntax(identToken, lParenToken, exprList, rParenToken);
         }
 
-        private ParameterListSyntax ParseParameterList()
+        private IEnumerable<ParameterDecSyntax> ParseParameterList()
         {
-            var startToken = CurrentToken;
             var result = new List<ParameterDecSyntax>();
             
             if (CurrentToken.Type == TokenType.RParen)
             {
-                return new ParameterListSyntax(startToken, result);
+                return result;
             }
             
             result.Add(ParseParameter());
@@ -352,7 +327,7 @@ namespace Waddle.Core.Syntax
                 result.Add(ParseParameter());
             }
             
-            return new ParameterListSyntax(startToken, result);
+            return result;
         }
 
         private ParameterDecSyntax ParseParameter()
@@ -362,7 +337,7 @@ namespace Waddle.Core.Syntax
             var typeToken = CurrentToken;
             ExpectTypeToken();
             Next();
-            return new ParameterDecSyntax(startToken, colonToken, new TypeSyntax(colonToken, typeToken));
+            return new ParameterDecSyntax(startToken, startToken.Lexeme, colonToken, new TypeSyntax(colonToken, typeToken));
         }
 
         private TypeSyntax ExpectTypeToken()
