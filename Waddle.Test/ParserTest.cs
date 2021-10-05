@@ -8,7 +8,6 @@ namespace Waddle.Test
 {
     public class ParserTest
     {
-        [Fact]
         public void OneEmptyFunction()
         {
             var tokens = new[]
@@ -20,7 +19,6 @@ namespace Waddle.Test
             p.Parse();
         }
         
-        [Fact]
         public void TwoEmptyFunctions()
         {
             var tokens = new[]
@@ -33,7 +31,6 @@ namespace Waddle.Test
             p.Parse();
         }
         
-        [Fact]
         public void OneReturnFunction()
         {
             var tokens = new[]
@@ -45,7 +42,6 @@ namespace Waddle.Test
             p.Parse();
         }
         
-        [Fact]
         public void TwoReturnFunction()
         {
             var tokens = new[]
@@ -58,8 +54,6 @@ namespace Waddle.Test
             p.Parse();
         }
         
-        
-        [Fact]
         public void OneInvocationFunction()
         {
             var tokens = new[]
@@ -71,7 +65,6 @@ namespace Waddle.Test
             p.Parse();
         }
         
-        [Fact]
         public void TwoInvocationFunction()
         {
             var tokens = new[]
@@ -85,7 +78,7 @@ namespace Waddle.Test
         }
 
         [Fact]
-        public void IntegrationTest_Step1()
+        public void ParserTest_Step1()
         {
             var reader = @"
                 function addTwoNumbers(a: int, b: int) -> int {
@@ -109,6 +102,20 @@ namespace Waddle.Test
             var tokens = lexer.Lex().ToList();
             var parser = new Parser(tokens);
             parser.Parse();
+        }
+
+        [Fact]
+        public void AstEmissionTest()
+        {
+            var reader = @"
+                function main() {
+                }
+                ".CharwiseWithTrimmedLines();
+            using var lexer = new Lexer(reader);
+            var tokens = lexer.Lex().ToList();
+            var parser = new Parser(tokens);
+            var ast = parser.Parse();
+            
         }
     }
 }

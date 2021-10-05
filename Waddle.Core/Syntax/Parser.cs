@@ -113,6 +113,7 @@ namespace Waddle.Core.Syntax
             Next();
             var parameter = ParseParameter();
             var equalToken = Assert(TokenType.Equal);
+            Next();
             var expression = ParseExpression();
             return new DeclStmtSyntax(startToken, parameter, equalToken, expression);
         }
@@ -121,7 +122,7 @@ namespace Waddle.Core.Syntax
         {
             var startToken = CurrentToken;
             var lParenToken = Expect(TokenType.LParen);
-
+            Next();
             var argumentListSyntax = ParseExpressionList();
             
             Next();
@@ -159,6 +160,7 @@ namespace Waddle.Core.Syntax
         private InvocationStmtSyntax ParseInvocationStatement()
         {
             var startToken = CurrentToken;
+            Next();
             var invocationExpression = ParseInvocationExpression();
             return new InvocationStmtSyntax(startToken, invocationExpression);
         }
@@ -166,6 +168,7 @@ namespace Waddle.Core.Syntax
         private ReturnStmtSyntax ParseReturnStatement()
         {
             var startToken = CurrentToken;
+            Next();
             var expression = ParseExpression();
             return new ReturnStmtSyntax(startToken, expression);
         }
@@ -173,6 +176,7 @@ namespace Waddle.Core.Syntax
         private IfStmtSyntax ParseIfStatement()
         {
             var startToken = CurrentToken;
+            Next();
             var expression = ParseExpression();
             var block = ParseBlock();
             return new IfStmtSyntax(startToken, expression, block);
@@ -192,10 +196,12 @@ namespace Waddle.Core.Syntax
                 switch (CurrentToken.Type)
                 {
                     case TokenType.Or:
+                        Next();
                         left = new LogicalExpressionSyntax(startToken, left, ParseRelationalExpression(),
                             LogicalOperator.Or);
                         break;
                     case TokenType.And:
+                        Next();
                         left = new LogicalExpressionSyntax(startToken, left, ParseRelationalExpression(),
                             LogicalOperator.And);
                         break;
@@ -214,21 +220,27 @@ namespace Waddle.Core.Syntax
                 switch (CurrentToken.Type)
                 {
                     case TokenType.Equals:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Eq);
                         break;
                     case TokenType.NotEquals:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Ne);
                         break;
                     case TokenType.LessEquals:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Le);
                         break;
                     case TokenType.LessThan:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Lt);
                         break;
                     case TokenType.GreaterEquals:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Ge);
                         break;
                     case TokenType.GreaterThan:
+                        Next();
                         left = new RelationalExpressionSyntax(startToken, left, ParseTermExpression(), RelationalOperator.Gt);
                         break;
                     default:
@@ -246,9 +258,11 @@ namespace Waddle.Core.Syntax
                 switch (CurrentToken.Type)
                 {
                     case TokenType.Plus:
+                        Next();
                         left = new TermExpressionSyntax(startToken, left, ParseProductExpression(), TermOperator.Plus);
                         break;
                     case TokenType.Minus:
+                        Next();
                         left = new TermExpressionSyntax(startToken, left, ParseProductExpression(), TermOperator.Minus);
                         break;
                     default:
@@ -268,9 +282,11 @@ namespace Waddle.Core.Syntax
                 switch (CurrentToken.Type)
                 {
                     case TokenType.Multiply:
+                        Next();
                         left = new ProductExpressionSyntax(startToken, left, ParseAtom(), ProductOperator.Times);
                         break;
                     case TokenType.Divide:
+                        Next();
                         left = new ProductExpressionSyntax(startToken, left, ParseAtom(), ProductOperator.Divide);
                         break;
                     default:
@@ -281,30 +297,26 @@ namespace Waddle.Core.Syntax
 
         private AtomSyntax ParseAtom()
         {
-            Next();
             if (CurrentToken.Type == TokenType.Arrow)
             {
                 return ParseInvocationExpression();
             }
-            else if (CurrentToken.Type == TokenType.Number)
+            if (CurrentToken.Type == TokenType.Number)
             {
+                return new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
             }
-            else if (CurrentToken.Type == TokenType.Identifier)
+            if (CurrentToken.Type == TokenType.Identifier)
             {
+                return new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
             }
-            else
-            {
-                throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");   
-            }
-            
-            Token atomToken = CurrentToken;
-            return new AtomSyntax(atomToken);
+            throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");   
         }
 
         private InvocationExpressionSyntax ParseInvocationExpression()
         {
             var identToken = Expect(TokenType.Identifier);
             var lParenToken = Expect(TokenType.LParen);
+            Next();
             var exprList = ParseExpressionList();
             var rParenToken = CurrentToken;
             Next();

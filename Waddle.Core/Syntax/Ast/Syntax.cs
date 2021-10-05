@@ -32,7 +32,7 @@ namespace Waddle.Core.Syntax.Ast
 
     public abstract record ExpressionSyntax(Token StartToken) : Syntax(StartToken);
 
-    public record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right): ExpressionSyntax(StartToken);
+    public abstract record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right): ExpressionSyntax(StartToken);
 
     public record TermExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, TermOperator Operator)
         : BinaryExpressionSyntax(StartToken, Left, Right);
@@ -74,7 +74,7 @@ namespace Waddle.Core.Syntax.Ast
         Divide,
     }
 
-    public record AtomSyntax(Token StartToken) : ExpressionSyntax(StartToken);
+    public abstract record AtomSyntax(Token StartToken) : ExpressionSyntax(StartToken);
 
     public record InvocationExpressionSyntax(
         Token Identifier,
@@ -82,4 +82,8 @@ namespace Waddle.Core.Syntax.Ast
         IEnumerable<ExpressionSyntax> Arguments,
         Token RParen
     ) : AtomSyntax(Identifier);
+
+    public record IntegerLiteralAtom(Token StartToken, int Value) : AtomSyntax(StartToken);
+
+    public record IdentifierAtom(Token StartToken, string Identifier) : AtomSyntax(StartToken);
 }

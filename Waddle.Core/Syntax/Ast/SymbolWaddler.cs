@@ -10,23 +10,23 @@ namespace Waddle.Core.Syntax.Ast
         private readonly IDictionary<string, FunctionDecl> _functions =
             new Dictionary<string, FunctionDecl>();
 
-        public IImmutableDictionary<string, FunctionDecl> Functions => _functions.ToImmutableDictionary();
-
-        public void WaddleProgram(ProgramSyntax program)
+        public IImmutableDictionary<string, FunctionDecl> WaddleProgram(ProgramSyntax program)
         {
             foreach (var function in program.FunctionDeclarations)
             {
                 WaddleFunctionDeclaration(function);
             }
+
+            return _functions.ToImmutableDictionary();
         }
 
         private void WaddleFunctionDeclaration(FunctionDeclSyntax functionSyntax)
         {
-            var function = new FunctionDecl(functionSyntax.Name, functionSyntax.ReturnType,
+            var function = new FunctionDecl(functionSyntax.Name, functionSyntax.ReturnType?.ToSymbol(),
                 functionSyntax.Body.Statements
                     .Select(stmt => stmt as DeclStmtSyntax)
                     .Where(stmt => stmt != null)
-                    .Select(stmt => new VariableDecl(stmt!.ParameterDecSyntax.Name, stmt.ParameterDecSyntax.TypeSyntax)));
+                    .Select(stmt => new VariableDecl(stmt!.ParameterDecSyntax.Name, stmt.ParameterDecSyntax.TypeSyntax.ToSymbol())));
             _functions.Add(function.Name, function);
         }
     }
