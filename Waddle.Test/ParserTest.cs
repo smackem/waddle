@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Waddle.Core.Symbols;
 using Waddle.Core.Syntax;
+using Waddle.Core.Syntax.Ast;
 using Xunit;
 
 namespace Waddle.Test
@@ -115,7 +116,9 @@ namespace Waddle.Test
             var tokens = lexer.Lex().ToList();
             var parser = new Parser(tokens);
             var ast = parser.Parse();
-            
+            var symbols = new SymbolWaddler().WaddleProgram((ProgramSyntax)ast);
+            var semanticWaddler = new SemanticWaddler(symbols);
+            semanticWaddler.WaddleProgram((ProgramSyntax)ast);
         }
     }
 }
