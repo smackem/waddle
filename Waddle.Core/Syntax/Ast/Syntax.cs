@@ -77,13 +77,18 @@ namespace Waddle.Core.Syntax.Ast
     public abstract record AtomSyntax(Token StartToken) : ExpressionSyntax(StartToken);
 
     public record InvocationExpressionSyntax(
-        Token Identifier,
+        Token StartToken,
+        string Identifier,
         Token LParen,
         IEnumerable<ExpressionSyntax> Arguments,
         Token RParen
-    ) : AtomSyntax(Identifier);
+    ) : AtomSyntax(StartToken);
 
     public record IntegerLiteralAtom(Token StartToken, int Value) : AtomSyntax(StartToken);
+    
+    public record BoolLiteralAtom(Token StartToken, bool Value) : AtomSyntax(StartToken);
+    
+    public record StringLiteralAtom(Token StartToken, string Value) : AtomSyntax(StartToken);
 
     public record IdentifierAtom(Token StartToken, string Identifier) : AtomSyntax(StartToken);
 }

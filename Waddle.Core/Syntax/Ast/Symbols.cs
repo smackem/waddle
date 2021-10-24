@@ -46,5 +46,6 @@ namespace Waddle.Core.Syntax.Ast
         public static readonly TypeSymbol Integer = new TypeSymbol("int");
         public static readonly TypeSymbol String = new TypeSymbol("string");
         public static readonly TypeSymbol Bool = new TypeSymbol("bool");
+        public static readonly TypeSymbol Null = new TypeSymbol("Null");
     }
 }

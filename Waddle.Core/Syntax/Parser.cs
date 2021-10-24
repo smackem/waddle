@@ -305,6 +305,14 @@ namespace Waddle.Core.Syntax
             {
                 return new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
             }
+            if (CurrentToken.Type == TokenType.Bool)
+            {
+                return new BoolLiteralAtom(CurrentToken, bool.Parse(CurrentToken.Lexeme));
+            }
+            if (CurrentToken.Type == TokenType.String)
+            {
+                return new StringLiteralAtom(CurrentToken, CurrentToken.Lexeme);
+            }
             if (CurrentToken.Type == TokenType.Identifier)
             {
                 return new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
@@ -320,7 +328,7 @@ namespace Waddle.Core.Syntax
             var exprList = ParseExpressionList();
             var rParenToken = CurrentToken;
             Next();
-            return new InvocationExpressionSyntax(identToken, lParenToken, exprList, rParenToken);
+            return new InvocationExpressionSyntax(identToken, identToken.Lexeme, lParenToken, exprList, rParenToken);
         }
 
         private IEnumerable<ParameterDecSyntax> ParseParameterList()
