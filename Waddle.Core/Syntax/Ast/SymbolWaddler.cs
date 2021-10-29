@@ -26,7 +26,7 @@ namespace Waddle.Core.Syntax.Ast
                 functionSyntax.Body.Statements
                     .Select(stmt => stmt as DeclStmtSyntax)
                     .Where(stmt => stmt != null)
-                    .Select(stmt => new VariableDecl(stmt!.ParameterDecSyntax.Name, stmt.ParameterDecSyntax.TypeSyntax.ToSymbol())));
+                    .Select(stmt => new VariableDecl(stmt!.ParameterDeclSyntax.Name, stmt.ParameterDeclSyntax.TypeSyntax.ToSymbol())));
             _functions.Add(function.Name, function);
         }
     }

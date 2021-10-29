@@ -125,6 +125,8 @@ namespace Waddle.Core.Symbols
                 "char" => TokenType.Char,
                 "buffer" => TokenType.Buffer,
                 "regex" => TokenType.Regex,
+                "false" => TokenType.False,
+                "true" => TokenType.True,
                 _ => TokenType.Identifier,
             };
 

@@ -303,19 +303,27 @@ namespace Waddle.Core.Syntax
             }
             if (CurrentToken.Type == TokenType.Number)
             {
-                return new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
+                var literal = new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
+                Next();
+                return literal;
             }
-            if (CurrentToken.Type == TokenType.Bool)
+            if (CurrentToken.Type is TokenType.False or TokenType.True)
             {
-                return new BoolLiteralAtom(CurrentToken, bool.Parse(CurrentToken.Lexeme));
+                var literal = new BoolLiteralAtom(CurrentToken, bool.Parse(CurrentToken.Lexeme));
+                Next();
+                return literal;
             }
             if (CurrentToken.Type == TokenType.String)
             {
-                return new StringLiteralAtom(CurrentToken, CurrentToken.Lexeme);
+                var literal = new StringLiteralAtom(CurrentToken, CurrentToken.Lexeme);
+                Next();
+                return literal;
             }
             if (CurrentToken.Type == TokenType.Identifier)
             {
-                return new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
+                var ident = new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
+                Next();
+                return ident;
             }
             throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");   
         }
@@ -331,9 +339,9 @@ namespace Waddle.Core.Syntax
             return new InvocationExpressionSyntax(identToken, identToken.Lexeme, lParenToken, exprList, rParenToken);
         }
 
-        private IEnumerable<ParameterDecSyntax> ParseParameterList()
+        private IEnumerable<ParameterDeclSyntax> ParseParameterList()
         {
-            var result = new List<ParameterDecSyntax>();
+            var result = new List<ParameterDeclSyntax>();
             
             if (CurrentToken.Type == TokenType.RParen)
             {
@@ -350,14 +358,14 @@ namespace Waddle.Core.Syntax
             return result;
         }
 
-        private ParameterDecSyntax ParseParameter()
+        private ParameterDeclSyntax ParseParameter()
         {
             var startToken = Assert(TokenType.Identifier);
             var colonToken = Expect(TokenType.Colon);
-            var typeToken = CurrentToken;
             ExpectTypeToken();
+            var typeToken = CurrentToken;
             Next();
-            return new ParameterDecSyntax(startToken, startToken.Lexeme, colonToken, new TypeSyntax(colonToken, typeToken));
+            return new ParameterDeclSyntax(startToken, startToken.Lexeme, colonToken, new TypeSyntax(typeToken, typeToken));
         }
 
         private TypeSyntax ExpectTypeToken()

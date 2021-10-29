@@ -12,7 +12,7 @@ namespace Waddle.Core.Syntax.Ast
                 TokenType.Int => TypeSymbol.Integer,
                 TokenType.String => TypeSymbol.String,
                 TokenType.Bool => TypeSymbol.Bool,
-                _ => throw new ArgumentOutOfRangeException(),
+                var t => throw new ArgumentOutOfRangeException($"{t}"),
             };
         }
     }

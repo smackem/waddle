@@ -9,7 +9,7 @@ namespace Waddle.Core.Syntax.Ast
     public class SemanticWaddler
     {
         private readonly IImmutableDictionary<string, FunctionDecl> _functions;
-        private FunctionDecl _currentFunction;
+        private FunctionDecl? _currentFunction;
 
         public SemanticWaddler(IImmutableDictionary<string, FunctionDecl> functions)
         {
@@ -51,9 +51,27 @@ namespace Waddle.Core.Syntax.Ast
             switch (stmt)
             {
                 case DeclStmtSyntax declStmt:
-                    WaddleExpression(declStmt.Expression);
+                    var variable = _currentFunction?.Variables[declStmt.ParameterDeclSyntax.Name]!;
+                    var exprType = WaddleExpression(declStmt.Expression);
+                    if (IsAssignableFrom(variable.Type!, exprType) == false)
+                    {
+                        throw new SemanticErrorException($"type {variable.Type} is not assignable from {exprType}");
+                    }
                     break;
                 case AssignStmtSyntax assignStmt:
+                    // check IsAssignableFrom
+                    break;
+                case ReturnStmtSyntax returnStmt:
+                    // check IsAssignableFrom (function.type, expr.type)
+                    break;
+                case IfStmtSyntax ifStmt:
+                    // check that expr is boolean
+                    break;
+                case InvocationStmtSyntax invocationStmt:
+                    // check inner InvocationExpressionSyntax 
+                    break;
+                case PrintStmtSyntax printStmt:
+                    // check that expr is not void 
                     break;
             }
         }
@@ -67,10 +85,11 @@ namespace Waddle.Core.Syntax.Ast
                 RelationalExpressionSyntax relationalExpr => WaddleRelationalExpr(relationalExpr),
                 TermExpressionSyntax termExpr => WaddleTermExpr(termExpr),
                 InvocationExpressionSyntax invocationExpr => WaddleInvocationExpr(invocationExpr),
-                BoolLiteralAtom boolAtom => TypeSymbol.Bool,
-                IntegerLiteralAtom integerAtom => TypeSymbol.Integer,
-                StringLiteralAtom stringAtom => TypeSymbol.String,
-                IdentifierAtom identifierAtom => _currentFunction.Variables[identifierAtom.Identifier].Type ?? TypeSymbol.Null,
+                BoolLiteralAtom _ => TypeSymbol.Bool,
+                IntegerLiteralAtom _ => TypeSymbol.Integer,
+                StringLiteralAtom _ => TypeSymbol.String,
+                IdentifierAtom identifierAtom => _currentFunction?.Variables[identifierAtom.Identifier].Type
+                                                 ?? throw new SemanticErrorException($"{identifierAtom.Identifier} does not have a type"),
                 _ => throw new ArgumentOutOfRangeException(nameof(exprStmt))
             };
         }
@@ -131,7 +150,12 @@ namespace Waddle.Core.Syntax.Ast
 
         private TypeSymbol WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
         {
-            return _functions[invocationExpr.Identifier].Type ?? TypeSymbol.Null;
+            // check that for all parameters: IsAssignableFrom(param.Type, arg.Type)
+            if (_functions.ContainsKey(invocationExpr.Identifier) == false)
+            {
+                throw new SemanticErrorException($"function {invocationExpr.Identifier} is not defined");
+            }
+            return _functions[invocationExpr.Identifier].Type ?? TypeSymbol.Void;
         }
 
         private static bool IsAssignableFrom(TypeSymbol left, TypeSymbol right)

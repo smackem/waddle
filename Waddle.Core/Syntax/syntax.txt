@@ -103,4 +103,6 @@ atom :=
     IDENTIFIER
     STRING
     NUMBER
+    FALSE
+    TRUE
     ...

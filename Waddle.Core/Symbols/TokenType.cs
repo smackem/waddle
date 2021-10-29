@@ -4,6 +4,8 @@ namespace Waddle.Core.Symbols
     {
         Identifier,
         Number,
+        False,
+        True,
         StringLiteral,
         Function,
         LParen,

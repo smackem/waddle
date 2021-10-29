@@ -13,7 +13,7 @@ namespace Waddle.Core.Symbols
             _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
-        public int LineNumber { get; private set; }
+        public int LineNumber { get; private set; } = 1;
         public int CharPosition { get; private set; }
 
         public int Read()
