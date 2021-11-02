@@ -48,30 +48,94 @@ namespace Waddle.Core.Syntax.Ast
 
         private void WaddleStmt(StatementSyntax stmt)
         {
+            TypeSymbol? exprType;
             switch (stmt)
             {
                 case DeclStmtSyntax declStmt:
+                    if (_currentFunction == null)
+                    {
+                        throw new SemanticErrorException($"can not use declare statement outside of function.");
+                    }
+                    
                     var variable = _currentFunction?.Variables[declStmt.ParameterDeclSyntax.Name]!;
-                    var exprType = WaddleExpression(declStmt.Expression);
+                    exprType = WaddleExpression(declStmt.Expression);
+                    
                     if (IsAssignableFrom(variable.Type!, exprType) == false)
                     {
-                        throw new SemanticErrorException($"type {variable.Type} is not assignable from {exprType}");
+                        throw new SemanticErrorException($"type {variable.Type} is not assignable from {exprType}.");
                     }
+                    
                     break;
                 case AssignStmtSyntax assignStmt:
+                    if (_currentFunction == null)
+                    {
+                        throw new SemanticErrorException($"can not use assign statement outside of function.");
+                    }
+                    
+                    if (_currentFunction!.Variables.ContainsKey(assignStmt.StartToken.Lexeme) == false)
+                    {
+                        throw new SemanticErrorException($"unknown identifier ({assignStmt.StartToken.Lexeme}) @({assignStmt.StartToken.LineNumber}{assignStmt.StartToken.CharPosition}).");
+                    }
+                    
+                    var identifier = _currentFunction?.Variables[assignStmt.StartToken.Lexeme]!;
+                    exprType = WaddleExpression(assignStmt.Expression);
+                    
                     // check IsAssignableFrom
+                    if (IsAssignableFrom(identifier.Type!, exprType) == false)
+                    {
+                        throw new SemanticErrorException($"The type {exprType} can not be assigned into {identifier.Name}.");
+                    }
+
                     break;
                 case ReturnStmtSyntax returnStmt:
+                    if (_currentFunction == null)
+                    {
+                        throw new SemanticErrorException($"can not use return statement outside of function.");
+                    }
+                    
+                    if (_currentFunction.Type == null)
+                    {
+                        //Ignore Type if function is typeless
+                        break;
+                    }
+                    
                     // check IsAssignableFrom (function.type, expr.type)
+                    exprType = WaddleExpression(returnStmt.Expression);
+                    if (IsAssignableFrom(_currentFunction.Type!, exprType) == false)
+                    {
+                        throw new SemanticErrorException($"Function result is of type {_currentFunction.Type!}, the type {exprType} can not be assigned as result.");
+                    }
+                    
                     break;
                 case IfStmtSyntax ifStmt:
+                    if (_currentFunction == null)
+                    {
+                        throw new SemanticErrorException($"can not use if statement outside of function.");
+                    }
+                    
                     // check that expr is boolean
+                    exprType = WaddleExpression(ifStmt.Expression);
+                    if (IsAssignableFrom(TypeSymbol.Bool, exprType) == false)
+                    {
+                        throw new SemanticErrorException("If-Statement expression must result in boolean value.");
+                    }
+                    
                     break;
                 case InvocationStmtSyntax invocationStmt:
-                    // check inner InvocationExpressionSyntax 
+                    // check inner InvocationExpressionSyntax
+
+                    WaddleExpression(invocationStmt.Expression);
                     break;
                 case PrintStmtSyntax printStmt:
-                    // check that expr is not void 
+                    // check that expr is not void
+                    foreach (var printStmtArgument in printStmt.Arguments)
+                    {
+                        exprType = WaddleExpression(printStmtArgument);
+                        if (exprType == TypeSymbol.Void)
+                        {
+                            throw new SemanticErrorException("Can not print void-value.");
+                        }
+                    }
                     break;
             }
         }
@@ -150,11 +214,28 @@ namespace Waddle.Core.Syntax.Ast
 
         private TypeSymbol WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
         {
-            // check that for all parameters: IsAssignableFrom(param.Type, arg.Type)
             if (_functions.ContainsKey(invocationExpr.Identifier) == false)
             {
                 throw new SemanticErrorException($"function {invocationExpr.Identifier} is not defined");
             }
+
+            FunctionDecl functionDecl = _functions[invocationExpr.Identifier]!;
+            if (functionDecl.Parameters.Count != invocationExpr.Arguments.Count())
+            {
+                throw new SemanticErrorException($"function {invocationExpr.Identifier} has {functionDecl.Parameters.Count} parameters, {invocationExpr.Arguments.Count()} arguments where given.");
+            }
+
+            // check that for all parameters: IsAssignableFrom(param.Type, arg.Type)
+            for (int i = 0; i < functionDecl.Parameters.Count; i++)
+            {
+                var parameterAtI = functionDecl.Parameters.ElementAt(i);
+                var exprType = WaddleExpression(invocationExpr.Arguments.ElementAt(i));
+                if (IsAssignableFrom(parameterAtI.Value.Type!, exprType) == false)
+                {
+                    throw new SemanticErrorException($"Parameter {parameterAtI.Key} requires type {parameterAtI.Value.Type}, but type {exprType} was given.");
+                }
+            }
+            
             return _functions[invocationExpr.Identifier].Type ?? TypeSymbol.Void;
         }
 

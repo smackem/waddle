@@ -18,14 +18,17 @@ namespace Waddle.Core.Syntax.Ast
 
     public class FunctionDecl : Symbol
     {
+        private readonly IDictionary<string, VariableDecl> _parameters;
         private readonly IDictionary<string, VariableDecl> _variables;
 
         public IImmutableDictionary<string, VariableDecl> Variables => _variables.ToImmutableDictionary();
+        public IImmutableDictionary<string, VariableDecl> Parameters => _variables.ToImmutableDictionary();
 
-        public FunctionDecl(string name, TypeSymbol? type, IEnumerable<VariableDecl> variables)
+        public FunctionDecl(string name, TypeSymbol? type, IEnumerable<VariableDecl> variables, IEnumerable<VariableDecl> parameters)
             : base(name, type)
         {
             _variables = variables.ToDictionary(v => v.Name);
+            _parameters = parameters.ToDictionary(v => v.Name);
         }
     }
 
@@ -46,5 +49,10 @@ namespace Waddle.Core.Syntax.Ast
         public static readonly TypeSymbol String = new TypeSymbol("string");
         public static readonly TypeSymbol Bool = new TypeSymbol("bool");
         public static readonly TypeSymbol Void = new TypeSymbol("void");
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
