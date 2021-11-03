@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Waddle.Core.Symbols
+namespace Waddle.Core.Lexing
 {
     public class CharReader : IDisposable
     {

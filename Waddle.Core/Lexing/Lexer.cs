@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Waddle.Core.Symbols
+namespace Waddle.Core.Lexing
 {
     /// <summary>
     /// The lexer turns the input source code into a stream of tokens. A token represents an atomic syntactical element,

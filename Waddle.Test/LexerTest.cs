@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Waddle.Core.Symbols;
+using Waddle.Core.Lexing;
 using Xunit;
 
 namespace Waddle.Test

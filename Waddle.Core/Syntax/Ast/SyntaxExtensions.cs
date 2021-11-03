@@ -1,5 +1,5 @@
 using System;
-using Waddle.Core.Symbols;
+using Waddle.Core.Lexing;
 
 namespace Waddle.Core.Syntax.Ast
 {

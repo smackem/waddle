@@ -1,4 +1,4 @@
-namespace Waddle.Core.Symbols
+namespace Waddle.Core.Lexing
 {
     public enum TokenType
     {

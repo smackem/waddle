@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Xsl;
-using Waddle.Core.Symbols;
+using Waddle.Core.Lexing;
 using Waddle.Core.Syntax.Ast;
 
 namespace Waddle.Core.Syntax
@@ -153,6 +153,7 @@ namespace Waddle.Core.Syntax
         {
             var startToken = CurrentToken;
             var equalToken = Expect(TokenType.Equal);
+            Next();
             var expression = ParseExpression();
             return new AssignStmtSyntax(startToken, equalToken, expression);
         }
@@ -297,40 +298,46 @@ namespace Waddle.Core.Syntax
 
         private AtomSyntax ParseAtom()
         {
-            if (CurrentToken.Type == TokenType.Arrow)
+            switch (CurrentToken.Type)
             {
-                return ParseInvocationExpression();
+                case TokenType.Arrow:
+                {
+                    Next();
+                    return ParseInvocationExpression();
+                }
+                case TokenType.Number:
+                {
+                    var literal = new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
+                    Next();
+                    return literal;
+                }
+                case TokenType.False or TokenType.True:
+                {
+                    var literal = new BoolLiteralAtom(CurrentToken, bool.Parse(CurrentToken.Lexeme));
+                    Next();
+                    return literal;
+                }
+                case TokenType.String:
+                {
+                    var literal = new StringLiteralAtom(CurrentToken, CurrentToken.Lexeme);
+                    Next();
+                    return literal;
+                }
+                case TokenType.Identifier:
+                {
+                    var ident = new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
+                    Next();
+                    return ident;
+                }
+                default:
+                    throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");
             }
-            if (CurrentToken.Type == TokenType.Number)
-            {
-                var literal = new IntegerLiteralAtom(CurrentToken, int.Parse(CurrentToken.Lexeme));
-                Next();
-                return literal;
-            }
-            if (CurrentToken.Type is TokenType.False or TokenType.True)
-            {
-                var literal = new BoolLiteralAtom(CurrentToken, bool.Parse(CurrentToken.Lexeme));
-                Next();
-                return literal;
-            }
-            if (CurrentToken.Type == TokenType.String)
-            {
-                var literal = new StringLiteralAtom(CurrentToken, CurrentToken.Lexeme);
-                Next();
-                return literal;
-            }
-            if (CurrentToken.Type == TokenType.Identifier)
-            {
-                var ident = new IdentifierAtom(CurrentToken, CurrentToken.Lexeme);
-                Next();
-                return ident;
-            }
-            throw new Exception($"syntax error @({CurrentToken.LineNumber}:{CurrentToken.CharPosition}) - atom expected - found {CurrentToken.Type}");   
         }
 
         private InvocationExpressionSyntax ParseInvocationExpression()
         {
-            var identToken = Expect(TokenType.Identifier);
+            Assert(TokenType.Identifier);
+            var identToken = CurrentToken;
             var lParenToken = Expect(TokenType.LParen);
             Next();
             var exprList = ParseExpressionList();
