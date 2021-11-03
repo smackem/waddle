@@ -149,22 +149,10 @@ namespace Waddle.Test
             Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
         }
 
-        private static (ProgramSyntax ast, IImmutableDictionary<string, FunctionDecl> functions) LexParseAndWaddleSymbols(
-            string source)
-        {
-            var reader = source.CharwiseWithTrimmedLines();
-            using var lexer = new Lexer(reader);
-            var tokens = lexer.Lex().ToList();
-            var parser = new Parser(tokens);
-            var ast = (ProgramSyntax) parser.Parse();
-            var functions = new SymbolWaddler().WaddleProgram(ast);
-            return (ast, functions);
-        }
-
         [Fact]
         public void ThrowsErrorBecauseOfInvocationWithWrongType()
         {
-            var source = @"
+            const string source = @"
                 function addTwoNumbers(a: int, b: int) -> int {
                     return a + b;
                 }
@@ -186,6 +174,93 @@ namespace Waddle.Test
 
             var (ast, functions) = LexParseAndWaddleSymbols(source);
             Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+        
+        [Fact]
+        public void ThrowsOnMissingEntryPoint()
+        {
+            const string source = @"
+                function f() -> bool {
+                    return false;
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+ 
+        [Fact]
+        public void ThrowsOnIncompatibleTypesInComparisonEq()
+        {
+            const string source = @"
+                function main() {
+                    if 1 == false {
+                    }
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+ 
+        [Fact]
+        public void ThrowsOnIncompatibleTypesInComparisonNe()
+        {
+            const string source = @"
+                function main() {
+                    if 1 != false {
+                    }
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+ 
+        [Fact]
+        public void ThrowsOnIncompatibleTypesInComparisonLt()
+        {
+            const string source = @"
+                function main() {
+                    if true > false {
+                    }
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+ 
+        [Fact]
+        public void ThrowsOnIncompatibleTypesInAddition()
+        {
+            const string source = @"
+                function main() {
+                    var x: int = true + 1;
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+ 
+        [Fact]
+        public void ThrowsOnIncompatibleTypesInProduct()
+        {
+            const string source = @"
+                function main() {
+                    var x: int = 12 * false;
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        private static (ProgramSyntax ast, IImmutableDictionary<string, FunctionDecl> functions) LexParseAndWaddleSymbols(
+            string source)
+        {
+            var reader = source.CharwiseWithTrimmedLines();
+            using var lexer = new Lexer(reader);
+            var tokens = lexer.Lex().ToList();
+            var parser = new Parser(tokens);
+            var ast = (ProgramSyntax) parser.Parse();
+            var functions = new SymbolWaddler().WaddleProgram(ast);
+            return (ast, functions);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Waddle.Core.Syntax.Ast
@@ -18,17 +19,16 @@ namespace Waddle.Core.Syntax.Ast
 
     public class FunctionDecl : Symbol
     {
-        private readonly IDictionary<string, VariableDecl> _parameters;
         private readonly IDictionary<string, VariableDecl> _variables;
 
         public IImmutableDictionary<string, VariableDecl> Variables => _variables.ToImmutableDictionary();
-        public IImmutableDictionary<string, VariableDecl> Parameters => _variables.ToImmutableDictionary();
+        public IReadOnlyList<VariableDecl> Parameters { get; }
 
         public FunctionDecl(string name, TypeSymbol? type, IEnumerable<VariableDecl> variables, IEnumerable<VariableDecl> parameters)
             : base(name, type)
         {
             _variables = variables.ToDictionary(v => v.Name);
-            _parameters = parameters.ToDictionary(v => v.Name);
+            Parameters = new ReadOnlyCollection<VariableDecl>(parameters.ToArray());
         }
     }
 
