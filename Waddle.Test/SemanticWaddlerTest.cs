@@ -104,6 +104,21 @@ namespace Waddle.Test
         }
 
         [Fact]
+        public void ThrowsOnTypeMismatchedFunctionArgument2()
+        {
+            const string source = @"
+                function f(a: int, b: int, c: bool, d: int) {
+                }
+
+                function main() {
+                    ->f(1, 2, true, false);
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        [Fact]
         public void ThrowsOnTypeMismatchedFunctionInvocation()
         {
             const string source = @"
@@ -245,6 +260,55 @@ namespace Waddle.Test
             const string source = @"
                 function main() {
                     var x: int = 12 * false;
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        [Fact]
+        public void ThrowsOnEntryPointSignatureMismatch1()
+        {
+            const string source = @"
+                function main(illegalParameter: bool) {
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        [Fact]
+        public void ThrowsOnEntryPointSignatureMismatch2()
+        {
+            const string source = @"
+                function main() -> bool {
+                    return false;
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        [Fact]
+        public void ThrowsOnIfStmtWithoutConditionalExpr()
+        {
+            const string source = @"
+                function main() {
+                    if 1 { }
+                }
+                ";
+            var (ast, functions) = LexParseAndWaddleSymbols(source);
+            Assert.Throws<SemanticErrorException>(() => new SemanticWaddler(functions).WaddleProgram(ast));
+        }
+
+        [Fact]
+        public void ThrowsOnNestedDeclStmt()
+        {
+            const string source = @"
+                function main() {
+                    if true {
+                        var illegal: int = 0;
+                    }
                 }
                 ";
             var (ast, functions) = LexParseAndWaddleSymbols(source);

@@ -10,7 +10,7 @@ namespace Waddle.Core.Syntax.Ast
         public string Name { get; }
         public TypeSymbol? Type { get; }
 
-        public Symbol(string name, TypeSymbol? type)
+        protected Symbol(string name, TypeSymbol? type)
         {
             Name = name;
             Type = type;
@@ -21,15 +21,15 @@ namespace Waddle.Core.Syntax.Ast
     {
         private readonly IDictionary<string, VariableDecl> _variables;
 
-        public IImmutableDictionary<string, VariableDecl> Variables => _variables.ToImmutableDictionary();
-        public IReadOnlyList<VariableDecl> Parameters { get; }
-
         public FunctionDecl(string name, TypeSymbol? type, IEnumerable<VariableDecl> variables, IEnumerable<VariableDecl> parameters)
             : base(name, type)
         {
             _variables = variables.ToDictionary(v => v.Name);
             Parameters = new ReadOnlyCollection<VariableDecl>(parameters.ToArray());
         }
+
+        public IImmutableDictionary<string, VariableDecl> Variables => _variables.ToImmutableDictionary();
+        public IReadOnlyList<VariableDecl> Parameters { get; }
     }
 
     public class VariableDecl : Symbol
@@ -45,10 +45,10 @@ namespace Waddle.Core.Syntax.Ast
         {
         }
 
-        public static readonly TypeSymbol Integer = new TypeSymbol("int");
-        public static readonly TypeSymbol String = new TypeSymbol("string");
-        public static readonly TypeSymbol Bool = new TypeSymbol("bool");
-        public static readonly TypeSymbol Void = new TypeSymbol("void");
+        public static readonly TypeSymbol Integer = new("int");
+        public static readonly TypeSymbol String = new("string");
+        public static readonly TypeSymbol Bool = new("bool");
+        public static readonly TypeSymbol Void = new("void");
 
         public override string ToString()
         {

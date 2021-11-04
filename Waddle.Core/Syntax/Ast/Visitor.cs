@@ -13,6 +13,7 @@ namespace Waddle.Core.Syntax.Ast
             TResult Visit(StringValue v, TState state);
             TResult Visit(BoolValue v, TState state);
             TResult Visit(DecimalValue v, TState state);
+            TResult Visit(TupleValue v, TState state);
         }
 
         class IntegerValue : AttributeValue
@@ -68,6 +69,23 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
+        class TupleValue : AttributeValue
+        {
+            public AttributeValue Left { get; private set; }
+            public AttributeValue Right { get; private set; }
+
+            public TupleValue(AttributeValue left, AttributeValue right)
+            {
+                Left = left;
+                Right = right;
+            }
+
+            public override TResult Accept<TState, TResult>(IAttributeValueVisitor<TState, TResult> visitor, TState state)
+            {
+                return visitor.Visit(this, state);
+            }
+        }
+
         class Consumer
         {
             void Consume(AttributeValue v)
@@ -79,6 +97,7 @@ namespace Waddle.Core.Syntax.Ast
             {
                 public string Visit(IntegerValue v, object state)
                 {
+                    
                     return v.ToString();
                 }
 
@@ -95,6 +114,11 @@ namespace Waddle.Core.Syntax.Ast
                 public string Visit(DecimalValue v, object state)
                 {
                     return "decimal";
+                }
+
+                public string Visit(TupleValue v, object state)
+                {
+                    return $"{v.Left.Accept(this, state)} // {v.Right.Accept(this, state)}";
                 }
             }
         }

@@ -5,7 +5,7 @@ namespace Waddle.Cli
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             int? i = args.Length > 0 ? int.Parse(args[0]) : null;
             int? j = args.Length > 1 ? int.Parse(args[1]) : null;
@@ -28,6 +28,8 @@ namespace Waddle.Cli
             {
                 Console.WriteLine();
             }
+
+            return 123;
         }
     }
 }

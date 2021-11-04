@@ -26,12 +26,10 @@ namespace Waddle.Core.Syntax.Ast
                 functionSyntax.Parameters.Select(param => new VariableDecl(param!.Name, param!.TypeSyntax.ToSymbol())).ToArray();
             var function = new FunctionDecl(functionSyntax.Name, functionSyntax.ReturnType?.ToSymbol(),
                 functionSyntax.Body.Statements
-                    .Select(stmt => stmt as DeclStmtSyntax)
-                    .Where(stmt => stmt != null)
-                    .Select(stmt => new VariableDecl(stmt!.ParameterDeclSyntax.Name, stmt.ParameterDeclSyntax.TypeSyntax.ToSymbol()))
+                    .OfType<DeclStmtSyntax>()
+                    .Select(stmt => new VariableDecl(stmt.ParameterDeclSyntax.Name, stmt.ParameterDeclSyntax.TypeSyntax.ToSymbol()))
                     .Concat(parameters),
-                parameters
-                    );
+                parameters);
             _functions.Add(function.Name, function);
         }
     }

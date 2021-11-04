@@ -3,12 +3,16 @@ using Waddle.Core.Lexing;
 
 namespace Waddle.Core.Syntax.Ast
 {
-    public abstract record Syntax(Token StartToken);
+    public abstract record Syntax(Token StartToken)
+    {
+        public Syntax? Parent { get; internal set; }
+    };
 
     public record ProgramSyntax
         (Token StartToken, IEnumerable<FunctionDeclSyntax> FunctionDeclarations) : Syntax(StartToken);
 
-    public record FunctionDeclSyntax(Token StartToken, string Name, IEnumerable<ParameterDeclSyntax> Parameters, TypeSyntax? ReturnType, BlockSyntax Body);
+    public record FunctionDeclSyntax(Token StartToken, string Name, IEnumerable<ParameterDeclSyntax> Parameters, TypeSyntax? ReturnType, BlockSyntax Body)
+        : Syntax(StartToken);
 
     public record TypeSyntax(Token StartToken, Token TypeToken) : Syntax(StartToken);
     

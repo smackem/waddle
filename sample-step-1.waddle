@@ -27,8 +27,9 @@ function getGreaterNumber(a: int, b: int) -> int {
     return b;
 }
 
-function main() {
+function main() -> int {
     var x: int = ->addTwoNumbers(1, 2);
     var y: int = ->getGreaterNumber(x, 100);
     print(x, y);
+    return x + y;
 }

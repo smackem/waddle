@@ -29,7 +29,6 @@ namespace Waddle.Core.Syntax
             {
                 functionDecls.Add(ParseFunctionDecl());
             }
-
             return new ProgramSyntax(startToken, functionDecls);
         }
 
