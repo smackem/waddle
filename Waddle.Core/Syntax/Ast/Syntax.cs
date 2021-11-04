@@ -5,41 +5,113 @@ namespace Waddle.Core.Syntax.Ast
 {
     public abstract record Syntax(Token StartToken)
     {
-        public Syntax? Parent { get; internal set; }
-    };
+        public abstract TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state);
+    }
 
     public record ProgramSyntax
-        (Token StartToken, IEnumerable<FunctionDeclSyntax> FunctionDeclarations) : Syntax(StartToken);
+        (Token StartToken, IEnumerable<FunctionDeclSyntax> FunctionDeclarations) : Syntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public record FunctionDeclSyntax(Token StartToken, string Name, IEnumerable<ParameterDeclSyntax> Parameters, TypeSyntax? ReturnType, BlockSyntax Body)
-        : Syntax(StartToken);
+        : Syntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record TypeSyntax(Token StartToken, Token TypeToken) : Syntax(StartToken);
-    
-    public record ParameterDeclSyntax(Token StartToken, string Name, Token ColonToken, TypeSyntax TypeSyntax) : Syntax(StartToken);
+    public record TypeSyntax(Token StartToken, Token TypeToken) : Syntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record BlockSyntax(Token StartToken, IEnumerable<StatementSyntax> Statements) : Syntax(StartToken);
+    public record ParameterDeclSyntax(Token StartToken, string Name, Token ColonToken, TypeSyntax TypeSyntax) : Syntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
+
+    public record BlockSyntax(Token StartToken, IEnumerable<StatementSyntax> Statements) : Syntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public abstract record StatementSyntax(Token StartToken) : Syntax(StartToken);
 
-    public record ReturnStmtSyntax(Token StartToken, ExpressionSyntax Expression) : StatementSyntax(StartToken);
+    public record ReturnStmtSyntax(Token StartToken, ExpressionSyntax Expression) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record IfStmtSyntax (Token StartToken, ExpressionSyntax Expression, BlockSyntax Body) : StatementSyntax(StartToken);
+    public record IfStmtSyntax (Token StartToken, ExpressionSyntax Expression, BlockSyntax Body) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record AssignStmtSyntax (Token StartToken, Token EqualToken, ExpressionSyntax Expression) : StatementSyntax(StartToken);
+    public record AssignStmtSyntax (Token StartToken, Token EqualToken, ExpressionSyntax Expression) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record PrintStmtSyntax (Token StartToken, Token LParenToken, IEnumerable<ExpressionSyntax> Arguments) : StatementSyntax(StartToken);
+    public record PrintStmtSyntax (Token StartToken, Token LParenToken, IEnumerable<ExpressionSyntax> Arguments) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record DeclStmtSyntax(Token StartToken, ParameterDeclSyntax ParameterDeclSyntax, Token EqualToken,  ExpressionSyntax Expression) : StatementSyntax(StartToken);
+    public record DeclStmtSyntax(Token StartToken, ParameterDeclSyntax ParameterDeclSyntax, Token EqualToken,  ExpressionSyntax Expression) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record InvocationStmtSyntax(Token StartToken, InvocationExpressionSyntax Expression) : StatementSyntax(StartToken);
+    public record InvocationStmtSyntax(Token StartToken, InvocationExpressionSyntax Expression) : StatementSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public abstract record ExpressionSyntax(Token StartToken) : Syntax(StartToken);
 
     public abstract record BinaryExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right): ExpressionSyntax(StartToken);
 
     public record TermExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, TermOperator Operator)
-        : BinaryExpressionSyntax(StartToken, Left, Right);
+        : BinaryExpressionSyntax(StartToken, Left, Right)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public enum TermOperator
     {
@@ -48,7 +120,13 @@ namespace Waddle.Core.Syntax.Ast
     }
 
     public record LogicalExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, LogicalOperator Operator)
-        : BinaryExpressionSyntax(StartToken, Left, Right);
+        : BinaryExpressionSyntax(StartToken, Left, Right)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public enum LogicalOperator
     {
@@ -57,7 +135,13 @@ namespace Waddle.Core.Syntax.Ast
     }
 
     public record RelationalExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, RelationalOperator Operator)
-        : BinaryExpressionSyntax(StartToken, Left, Right);
+        : BinaryExpressionSyntax(StartToken, Left, Right)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public enum RelationalOperator
     {
@@ -70,7 +154,13 @@ namespace Waddle.Core.Syntax.Ast
     }
 
     public record ProductExpressionSyntax(Token StartToken, ExpressionSyntax Left, ExpressionSyntax Right, ProductOperator Operator)
-        : BinaryExpressionSyntax(StartToken, Left, Right);
+        : BinaryExpressionSyntax(StartToken, Left, Right)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
     public enum ProductOperator
     {
@@ -86,13 +176,43 @@ namespace Waddle.Core.Syntax.Ast
         Token LParen,
         IEnumerable<ExpressionSyntax> Arguments,
         Token RParen
-    ) : AtomSyntax(StartToken);
+    ) : AtomSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record IntegerLiteralAtom(Token StartToken, int Value) : AtomSyntax(StartToken);
-    
-    public record BoolLiteralAtom(Token StartToken, bool Value) : AtomSyntax(StartToken);
-    
-    public record StringLiteralAtom(Token StartToken, string Value) : AtomSyntax(StartToken);
+    public record IntegerLiteralAtom(Token StartToken, int Value) : AtomSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 
-    public record IdentifierAtom(Token StartToken, string Identifier) : AtomSyntax(StartToken);
+    public record BoolLiteralAtom(Token StartToken, bool Value) : AtomSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
+
+    public record StringLiteralAtom(Token StartToken, string Value) : AtomSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
+
+    public record IdentifierAtom(Token StartToken, string Identifier) : AtomSyntax(StartToken)
+    {
+        public override TResult Accept<TState, TResult>(ISyntaxVisitor<TState, TResult> visitor, TState state)
+        {
+            return visitor.Visit(this, state);
+        }
+    }
 }

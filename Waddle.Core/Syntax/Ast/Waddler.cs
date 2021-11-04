@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-
+#if WADDLER
 namespace Waddle.Core.Syntax.Ast
 {
     public class Waddler<T>
@@ -197,3 +197,4 @@ namespace Waddle.Core.Syntax.Ast
         }
     }
 }
+#endif
