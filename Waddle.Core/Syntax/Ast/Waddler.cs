@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 #if WADDLER
 namespace Waddle.Core.Syntax.Ast
@@ -63,41 +64,34 @@ namespace Waddle.Core.Syntax.Ast
 
         private void WaddlePrintStmt(PrintStmtSyntax printStmt)
         {
-            _listener.OnPrintStmt(printStmt);
-
+            List <T> arguments = new();
             foreach (var printStmtArgument in printStmt.Arguments)
             {
-                WaddleExpression(printStmtArgument);
+                arguments.Add(WaddleExpression(printStmtArgument));
             }
+            
+            _listener.OnPrintStmt(printStmt, arguments);
         }
 
         private void WaddleIfStmt(IfStmtSyntax ifStmt)
         {
-            _listener.OnIfStmt(ifStmt);
-
-            // check that expr is boolean
-            WaddleExpression(ifStmt.Expression);
+            _listener.OnIfStmt(ifStmt, WaddleExpression(ifStmt.Expression));
+            
         }
 
         private void WaddleReturnStmt(ReturnStmtSyntax returnStmt)
         {
-            _listener.OnReturnStmt(ifStmt);
-
-            WaddleExpression(returnStmt.Expression);
+            _listener.OnReturnStmt(returnStmt, WaddleExpression(returnStmt.Expression));
         }
 
         private void WaddleAssignStmt(AssignStmtSyntax assignStmt)
         {
-            _listener.OnAssignStmt(ifStmt);
-
-            WaddleExpression(assignStmt.Expression);
+            _listener.OnAssignStmt(assignStmt, WaddleExpression(assignStmt.Expression));
         }
 
         private void WaddleDeclStmt(DeclStmtSyntax declStmt)
         {
-            _listener.OnDeclStmt(ifStmt);
-
-            WaddleExpression(declStmt.Expression);
+            _listener.OnDeclStmt(declStmt, WaddleExpression(declStmt.Expression));
         }
 
         private T WaddleExpression(ExpressionSyntax exprStmt)
@@ -117,83 +111,49 @@ namespace Waddle.Core.Syntax.Ast
             };
         }
 
+        private T WaddleIdentifier(IdentifierAtom atom)
+        {
+            return _listener.OnIdentifierLiteral(atom);
+        }
+
+        private T WaddleStringLiteral(StringLiteralAtom atom)
+        {
+            return _listener.OnStringLiteral(atom);
+        }
+
+        private T WaddleIntegerLiteral(IntegerLiteralAtom atom)
+        {
+            return _listener.OnIntegerLiteral(atom);
+        }
+
+        private T WaddleBoolLiteral(BoolLiteralAtom atom)
+        {
+            return _listener.OnBoolLiteral(atom);
+        }
+
         private T WaddleTermExpr(TermExpressionSyntax termExpr)
         {
-            // _listener.OnTermExpr(termExpr);
-            // WaddleExpression(termExpr.Left);
-            // WaddleExpression(termExpr.Right);
-            //return _listener.OnTermExpr(WaddleExpression(termExpr.Left), WaddleExpression(termExpr.Right));
+            return _listener.OnTermExpr(termExpr, () => WaddleExpression(termExpr.Left), () => WaddleExpression(termExpr.Right));
         }
 
-        private TypeSymbol WaddleProductExpr(ProductExpressionSyntax productExpr)
+        private T WaddleProductExpr(ProductExpressionSyntax productExpr)
         {
-            if (WaddleExpression(productExpr.Left) != TypeSymbol.Integer)
-            {
-                throw new SemanticErrorException($"Not an Number @({productExpr.Left.StartToken.LineNumber}{productExpr.Left.StartToken.CharPosition}).");
-            }
-            if (WaddleExpression(productExpr.Right) != TypeSymbol.Integer)
-            {
-                throw new SemanticErrorException($"Not an Number @({productExpr.Right.StartToken.LineNumber}{productExpr.Right.StartToken.CharPosition}).");
-            }
-            return TypeSymbol.Integer;
+            return _listener.OnProductExpr(productExpr, () => WaddleExpression(productExpr.Left), () => WaddleExpression(productExpr.Right));
         }
 
-        private TypeSymbol WaddleLogicalExpr(LogicalExpressionSyntax logicalExpr)
+        private T WaddleLogicalExpr(LogicalExpressionSyntax logicalExpr)
         {
-            if (WaddleExpression(logicalExpr.Left) != TypeSymbol.Bool)
-            {
-                throw new SemanticErrorException($"Not an Bool @({logicalExpr.Left.StartToken.LineNumber}{logicalExpr.Left.StartToken.CharPosition}).");
-            }
-            if (WaddleExpression(logicalExpr.Right) != TypeSymbol.Bool)
-            {
-                throw new SemanticErrorException($"Not an Bool @({logicalExpr.Right.StartToken.LineNumber}{logicalExpr.Right.StartToken.CharPosition}).");
-            }
-            return TypeSymbol.Bool;
+            return _listener.OnLogicalExpr(logicalExpr, () => WaddleExpression(logicalExpr.Left), () => WaddleExpression(logicalExpr.Right));
         }
 
-        private TypeSymbol WaddleRelationalExpr(RelationalExpressionSyntax relationalExpr)
+        private T WaddleRelationalExpr(RelationalExpressionSyntax relationalExpr)
         {
-            // check relationExpr.Left and relationalExpr.Right
-            if (WaddleExpression(relationalExpr.Left) != TypeSymbol.Integer)
-            {
-                throw new SemanticErrorException($"Not an Integer @({relationalExpr.Left.StartToken.LineNumber}{relationalExpr.Left.StartToken.CharPosition}).");
-            }
-            if (WaddleExpression(relationalExpr.Right) != TypeSymbol.Integer)
-            {
-                throw new SemanticErrorException($"Not an Integer @({relationalExpr.Right.StartToken.LineNumber}{relationalExpr.Right.StartToken.CharPosition}).");
-            }
-            
-            return TypeSymbol.Bool;
+            return _listener.OnRelationalExpr(relationalExpr, () => WaddleExpression(relationalExpr.Left), () => WaddleExpression(relationalExpr.Right));
         }
 
-        private TypeSymbol WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
+        private T WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
         {
-            if (_functions.ContainsKey(invocationExpr.Identifier) == false)
-            {
-                throw new SemanticErrorException($"function {invocationExpr.Identifier} is not defined");
-            }
-
-            FunctionDecl functionDecl = _functions[invocationExpr.Identifier]!;
-            var parameters = functionDecl.Parameters;
-            var arguments = invocationExpr.Arguments.ToArray();
-
-            if (parameters.Count != arguments.Length)
-            {
-                throw new SemanticErrorException($"function {invocationExpr.Identifier} has {functionDecl.Parameters.Count} parameters, {invocationExpr.Arguments.Count()} arguments where given.");
-            }
-
-            // check that for all parameters: IsAssignableFrom(param.Type, arg.Type)
-            for (int i = 0; i < parameters.Count; i++)
-            {
-                var parameter = parameters[i];
-                var exprType = WaddleExpression(arguments[i]);
-                if (IsAssignableFrom(parameter.Type!, exprType) == false)
-                {
-                    throw new SemanticErrorException($"Parameter {parameter} requires type {parameter.Type}, but type {exprType} was given.");
-                }
-            }
-            
-            return _functions[invocationExpr.Identifier].Type ?? TypeSymbol.Void;
+            return _listener.OnInvocationExpr(invocationExpr, WaddleExpression);
         }
     }
 }
