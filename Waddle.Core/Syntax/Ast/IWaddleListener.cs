@@ -3,42 +3,41 @@ using System.Collections.Generic;
 
 namespace Waddle.Core.Syntax.Ast
 {
-    // TODO: add WaddleContext parameter with list of node ancestors
     public interface IWaddleListener
     {
-        void EnterProgram(ProgramSyntax syntax);
-        void LeaveProgram(ProgramSyntax syntax);
-        void EnterFunctionDeclaration(FunctionDeclSyntax syntax);
-        void LeaveFunctionDeclaration(FunctionDeclSyntax syntax);
-        void EnterPrintStmt(PrintStmtSyntax syntax);
-        void LeavePrintStmt(PrintStmtSyntax syntax);
-        void EnterIdentifierLiteral(IdentifierAtom atom);
-        void LeaveIdentifierLiteral(IdentifierAtom atom);
-        void EnterBoolLiteral(BoolLiteralAtom atom);
-        void LeaveBoolLiteral(BoolLiteralAtom atom);
-        void EnterIntegerLiteral(IntegerLiteralAtom atom);
-        void LeaveIntegerLiteral(IntegerLiteralAtom atom);
-        void EnterStringLiteral(StringLiteralAtom atom);
-        void LeaveStringLiteral(StringLiteralAtom atom);
-        void EnterTermExpr(TermExpressionSyntax termExpr);
-        void LeaveTermExpr(TermExpressionSyntax termExpr);
-        void EnterProductExpr(ProductExpressionSyntax productExpr);
-        void LeaveProductExpr(ProductExpressionSyntax productExpr);
-        void EnterRelationalExpr(RelationalExpressionSyntax relationalExpr);
-        void LeaveRelationalExpr(RelationalExpressionSyntax relationalExpr);
-        void EnterLogicalExpr(LogicalExpressionSyntax logicalExpr);
-        void LeaveLogicalExpr(LogicalExpressionSyntax logicalExpr);
-        void EnterInvocationExpr(InvocationExpressionSyntax invocationExpr);
-        void LeaveInvocationExpr(InvocationExpressionSyntax invocationExpr);
-        void EnterIfStmt(IfStmtSyntax ifStmt);
-        void LeaveIfStmt(IfStmtSyntax ifStmt);
-        void EnterReturnStmt(ReturnStmtSyntax returnStmt);
-        void LeaveReturnStmt(ReturnStmtSyntax returnStmt);
-        void EnterAssignStmt(AssignStmtSyntax assignStmt);
-        void LeaveAssignStmt(AssignStmtSyntax assignStmt);
-        void EnterDeclStmt(DeclStmtSyntax declStmt);
-        void LeaveDeclStmt(DeclStmtSyntax declStmt);
-        void EnterBlock(BlockSyntax block);
-        void LeaveBlock(BlockSyntax block);
+        bool EnterProgram(ProgramSyntax syntax, WaddleContext ctx);
+        void LeaveProgram(ProgramSyntax syntax, WaddleContext ctx);
+        bool EnterFunctionDeclaration(FunctionDeclSyntax syntax, WaddleContext ctx);
+        void LeaveFunctionDeclaration(FunctionDeclSyntax syntax, WaddleContext ctx);
+        bool EnterPrintStmt(PrintStmtSyntax syntax, WaddleContext ctx);
+        void LeavePrintStmt(PrintStmtSyntax syntax, WaddleContext ctx);
+        bool EnterIdentifierLiteral(IdentifierAtom atom, WaddleContext ctx);
+        void LeaveIdentifierLiteral(IdentifierAtom atom, WaddleContext ctx);
+        bool EnterBoolLiteral(BoolLiteralAtom atom, WaddleContext ctx);
+        void LeaveBoolLiteral(BoolLiteralAtom atom, WaddleContext ctx);
+        bool EnterIntegerLiteral(IntegerLiteralAtom atom, WaddleContext ctx);
+        void LeaveIntegerLiteral(IntegerLiteralAtom atom, WaddleContext ctx);
+        bool EnterStringLiteral(StringLiteralAtom atom, WaddleContext ctx);
+        void LeaveStringLiteral(StringLiteralAtom atom, WaddleContext ctx);
+        bool EnterTermExpr(TermExpressionSyntax termExpr, WaddleContext ctx);
+        void LeaveTermExpr(TermExpressionSyntax termExpr, WaddleContext ctx);
+        bool EnterProductExpr(ProductExpressionSyntax productExpr, WaddleContext ctx);
+        void LeaveProductExpr(ProductExpressionSyntax productExpr, WaddleContext ctx);
+        bool EnterRelationalExpr(RelationalExpressionSyntax relationalExpr, WaddleContext ctx);
+        void LeaveRelationalExpr(RelationalExpressionSyntax relationalExpr, WaddleContext ctx);
+        bool EnterLogicalExpr(LogicalExpressionSyntax logicalExpr, WaddleContext ctx);
+        void LeaveLogicalExpr(LogicalExpressionSyntax logicalExpr, WaddleContext ctx);
+        bool EnterInvocationExpr(InvocationExpressionSyntax invocationExpr, WaddleContext ctx);
+        void LeaveInvocationExpr(InvocationExpressionSyntax invocationExpr, WaddleContext ctx);
+        bool EnterIfStmt(IfStmtSyntax ifStmt, WaddleContext ctx);
+        void LeaveIfStmt(IfStmtSyntax ifStmt, WaddleContext ctx);
+        bool EnterReturnStmt(ReturnStmtSyntax returnStmt, WaddleContext ctx);
+        void LeaveReturnStmt(ReturnStmtSyntax returnStmt, WaddleContext ctx);
+        bool EnterAssignStmt(AssignStmtSyntax assignStmt, WaddleContext ctx);
+        void LeaveAssignStmt(AssignStmtSyntax assignStmt, WaddleContext ctx);
+        bool EnterDeclStmt(DeclStmtSyntax declStmt, WaddleContext ctx);
+        void LeaveDeclStmt(DeclStmtSyntax declStmt, WaddleContext ctx);
+        bool EnterBlock(BlockSyntax block, WaddleContext ctx);
+        void LeaveBlock(BlockSyntax block, WaddleContext ctx);
     }
 }

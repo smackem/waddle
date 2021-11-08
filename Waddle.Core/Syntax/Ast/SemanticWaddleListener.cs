@@ -4,77 +4,77 @@ namespace Waddle.Core.Syntax.Ast
 {
     public class SemanticWaddleListener : IWaddleListener
     {
-        public void EnterProgram(ProgramSyntax syntax)
+        public bool EnterProgram(ProgramSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveProgram(ProgramSyntax syntax)
+        public void LeaveProgram(ProgramSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterFunctionDeclaration(FunctionDeclSyntax syntax)
+        public bool EnterFunctionDeclaration(FunctionDeclSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveFunctionDeclaration(FunctionDeclSyntax syntax)
+        public void LeaveFunctionDeclaration(FunctionDeclSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterPrintStmt(PrintStmtSyntax syntax)
+        public bool EnterPrintStmt(PrintStmtSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeavePrintStmt(PrintStmtSyntax syntax)
+        public void LeavePrintStmt(PrintStmtSyntax syntax, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterIdentifierLiteral(IdentifierAtom atom)
+        public bool EnterIdentifierLiteral(IdentifierAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveIdentifierLiteral(IdentifierAtom atom)
+        public void LeaveIdentifierLiteral(IdentifierAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterBoolLiteral(BoolLiteralAtom atom)
+        public bool EnterBoolLiteral(BoolLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveBoolLiteral(BoolLiteralAtom atom)
+        public void LeaveBoolLiteral(BoolLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterIntegerLiteral(IntegerLiteralAtom atom)
+        public bool EnterIntegerLiteral(IntegerLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveIntegerLiteral(IntegerLiteralAtom atom)
+        public void LeaveIntegerLiteral(IntegerLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterStringLiteral(StringLiteralAtom atom)
+        public bool EnterStringLiteral(StringLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveStringLiteral(StringLiteralAtom atom)
+        public void LeaveStringLiteral(StringLiteralAtom atom, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterTermExpr(TermExpressionSyntax termExpr)
+        public bool EnterTermExpr(TermExpressionSyntax termExpr, WaddleContext ctx)
         {
             var visitor = new TypeExtractingVisitor(); // this should be a member
 
@@ -84,97 +84,97 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
-        public void LeaveTermExpr(TermExpressionSyntax termExpr)
+        public void LeaveTermExpr(TermExpressionSyntax termExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterProductExpr(ProductExpressionSyntax productExpr)
+        public bool EnterProductExpr(ProductExpressionSyntax productExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveProductExpr(ProductExpressionSyntax productExpr)
+        public void LeaveProductExpr(ProductExpressionSyntax productExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterRelationalExpr(RelationalExpressionSyntax relationalExpr)
+        public bool EnterRelationalExpr(RelationalExpressionSyntax relationalExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveRelationalExpr(RelationalExpressionSyntax relationalExpr)
+        public void LeaveRelationalExpr(RelationalExpressionSyntax relationalExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterLogicalExpr(LogicalExpressionSyntax logicalExpr)
+        public bool EnterLogicalExpr(LogicalExpressionSyntax logicalExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveLogicalExpr(LogicalExpressionSyntax logicalExpr)
+        public void LeaveLogicalExpr(LogicalExpressionSyntax logicalExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterInvocationExpr(InvocationExpressionSyntax invocationExpr)
+        public bool EnterInvocationExpr(InvocationExpressionSyntax invocationExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveInvocationExpr(InvocationExpressionSyntax invocationExpr)
+        public void LeaveInvocationExpr(InvocationExpressionSyntax invocationExpr, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterIfStmt(IfStmtSyntax ifStmt)
+        public bool EnterIfStmt(IfStmtSyntax ifStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveIfStmt(IfStmtSyntax ifStmt)
+        public void LeaveIfStmt(IfStmtSyntax ifStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterReturnStmt(ReturnStmtSyntax returnStmt)
+        public bool EnterReturnStmt(ReturnStmtSyntax returnStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveReturnStmt(ReturnStmtSyntax returnStmt)
+        public void LeaveReturnStmt(ReturnStmtSyntax returnStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterAssignStmt(AssignStmtSyntax assignStmt)
+        public bool EnterAssignStmt(AssignStmtSyntax assignStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveAssignStmt(AssignStmtSyntax assignStmt)
+        public void LeaveAssignStmt(AssignStmtSyntax assignStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterDeclStmt(DeclStmtSyntax declStmt)
+        public bool EnterDeclStmt(DeclStmtSyntax declStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveDeclStmt(DeclStmtSyntax declStmt)
+        public void LeaveDeclStmt(DeclStmtSyntax declStmt, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void EnterBlock(BlockSyntax block)
+        public bool EnterBlock(BlockSyntax block, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public void LeaveBlock(BlockSyntax block)
+        public void LeaveBlock(BlockSyntax block, WaddleContext ctx)
         {
             throw new System.NotImplementedException();
         }
