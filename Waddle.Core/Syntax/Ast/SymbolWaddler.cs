@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Waddle.Core.Syntax.Ast
 {
+    // TODO: translate into a IWaddleListener
     public class SymbolWaddler
     {
         private readonly IDictionary<string, FunctionDecl> _functions =

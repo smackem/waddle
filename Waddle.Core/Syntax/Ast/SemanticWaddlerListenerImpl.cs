@@ -16,7 +16,7 @@ namespace Waddle.Core.Syntax.Ast
             _functions = functions;
         }
         
-        public TypeSymbol OnProgram(ProgramSyntax syntax)
+        public TypeSymbol EnterProgram(ProgramSyntax syntax)
         {
             var hasEntryPoint = false;
 
@@ -49,7 +49,7 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
         
-        public void OnFunctionDeclaration(FunctionDeclSyntax syntax)
+        public void EnterFunctionDeclaration(FunctionDeclSyntax syntax)
         {
             var stmts = syntax.Body.Statements.ToArray();
             _currentFunction = _currentFunction = _functions[syntax.Name];
@@ -59,7 +59,7 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
-        public TypeSymbol OnPrintStmt(PrintStmtSyntax syntax, IEnumerable<TypeSymbol> allArguments)
+        public TypeSymbol EnterPrintStmt(PrintStmtSyntax syntax, IEnumerable<TypeSymbol> allArguments)
         {
             foreach (var exprType in allArguments)
             {
@@ -72,28 +72,28 @@ namespace Waddle.Core.Syntax.Ast
             return TypeSymbol.Void;
         }
 
-        public TypeSymbol OnIdentifierLiteral(IdentifierAtom atom)
+        public TypeSymbol EnterIdentifierLiteral(IdentifierAtom atom)
         {
             return _currentFunction?.Variables[atom.Identifier].Type
                    ?? throw new SemanticErrorException($"{atom.Identifier} does not have a type");
         }
 
-        public TypeSymbol OnBoolLiteral(BoolLiteralAtom atom)
+        public TypeSymbol EnterBoolLiteral(BoolLiteralAtom atom)
         {
             return  TypeSymbol.Bool;
         }
 
-        public TypeSymbol OnIntegerLiteral(IntegerLiteralAtom atom)
+        public TypeSymbol EnterIntegerLiteral(IntegerLiteralAtom atom)
         {
             return TypeSymbol.Integer;
         }
 
-        public TypeSymbol OnStringLiteral(StringLiteralAtom atom)
+        public TypeSymbol EnterStringLiteral(StringLiteralAtom atom)
         {
             return TypeSymbol.String;
         }
 
-        public TypeSymbol OnTermExpr(TermExpressionSyntax termExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
+        public TypeSymbol EnterTermExpr(TermExpressionSyntax termExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
         {
             if (waddleExpressionLeft.Invoke() != TypeSymbol.Integer)
             {
@@ -107,7 +107,7 @@ namespace Waddle.Core.Syntax.Ast
             return TypeSymbol.Integer;
         }
 
-        public TypeSymbol OnProductExpr(ProductExpressionSyntax productExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
+        public TypeSymbol EnterProductExpr(ProductExpressionSyntax productExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
         {
             if (waddleExpressionLeft.Invoke() != TypeSymbol.Integer)
             {
@@ -120,7 +120,7 @@ namespace Waddle.Core.Syntax.Ast
             return TypeSymbol.Integer;
         }
 
-        public TypeSymbol OnRelationalExpr(RelationalExpressionSyntax relationalExpr, Func<TypeSymbol> waddleExpressionLeft,
+        public TypeSymbol EnterRelationalExpr(RelationalExpressionSyntax relationalExpr, Func<TypeSymbol> waddleExpressionLeft,
             Func<TypeSymbol> waddleExpressionRight)
         {
             // check relationExpr.Left and relationalExpr.Right
@@ -136,7 +136,7 @@ namespace Waddle.Core.Syntax.Ast
             return TypeSymbol.Bool;
         }
 
-        public TypeSymbol OnLogicalExpr(LogicalExpressionSyntax logicalExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
+        public TypeSymbol EnterLogicalExpr(LogicalExpressionSyntax logicalExpr, Func<TypeSymbol> waddleExpressionLeft, Func<TypeSymbol> waddleExpressionRight)
         {
             if (waddleExpressionLeft.Invoke() != TypeSymbol.Bool)
             {
@@ -149,7 +149,7 @@ namespace Waddle.Core.Syntax.Ast
             return TypeSymbol.Bool;
         }
 
-        public TypeSymbol OnInvocationExpr(InvocationExpressionSyntax invocationExpr, Func<ExpressionSyntax, TypeSymbol> waddleExpression)
+        public TypeSymbol EnterInvocationExpr(InvocationExpressionSyntax invocationExpr, Func<ExpressionSyntax, TypeSymbol> waddleExpression)
         {
             
             if (_functions.ContainsKey(invocationExpr.Identifier) == false)
@@ -180,7 +180,7 @@ namespace Waddle.Core.Syntax.Ast
             return _functions[invocationExpr.Identifier].Type ?? TypeSymbol.Void;
         }
 
-        public void OnIfStmt(IfStmtSyntax ifStmt, TypeSymbol exprType)
+        public void EnterIfStmt(IfStmtSyntax ifStmt, TypeSymbol exprType)
         {
             
             if (_currentFunction == null)
@@ -195,7 +195,7 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
-        public void OnReturnStmt(ReturnStmtSyntax returnStmt, TypeSymbol returnExprType)
+        public void EnterReturnStmt(ReturnStmtSyntax returnStmt, TypeSymbol returnExprType)
         {
             if (_currentFunction == null)
             {
@@ -215,7 +215,7 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
-        public void OnAssignStmt(AssignStmtSyntax assignStmt, TypeSymbol waddleExpression)
+        public void EnterAssignStmt(AssignStmtSyntax assignStmt, TypeSymbol waddleExpression)
         {
             if (_currentFunction == null)
             {
@@ -237,7 +237,7 @@ namespace Waddle.Core.Syntax.Ast
             }
         }
 
-        public void OnDeclStmt(DeclStmtSyntax declStmt, TypeSymbol exprType)
+        public void EnterDeclStmt(DeclStmtSyntax declStmt, TypeSymbol exprType)
         {
             if (_currentFunction == null)
             {

@@ -1,38 +1,65 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-#if WADDLER
+
 namespace Waddle.Core.Syntax.Ast
 {
-    public class Waddler<T>
+    // TODO: add WaddleContext and stack.Push/Pop calls
+    public class Waddler
     {
-        private readonly IWaddleListener<T> _listener;
+        private readonly IWaddleListener _listener;
+        private readonly Stack<Syntax> _stack = new();
 
-        public Waddler(IWaddleListener<T> listener)
+        public Waddler(IWaddleListener listener)
         {
             _listener = listener;
         }
-        
+
+        /// <summary>
+        /// Gets a collection containing all ancestors of the current syntax, beginning with the direct parent.
+        /// </summary>
+        protected IReadOnlyList<Syntax> Ancestors => _stack.ToArray();
+
+        /// <summary>
+        /// Gets the direct parent of the current syntax if any.
+        /// </summary>
+        protected Syntax? Parent => _stack.TryPeek(out var syntax) ? syntax : null;
+
         public void WaddleProgram(ProgramSyntax program)
         {
-            _listener.OnProgram(program);
+            _stack.Push(program);
+            _listener.EnterProgram(program);
 
             foreach (var function in program.FunctionDeclarations)
             {
                 WaddleFunctionDeclaration(function);
             }
+
+            _listener.LeaveProgram(program);
+            _stack.Pop();
         }
 
         private void WaddleFunctionDeclaration(FunctionDeclSyntax function)
         {
-            _listener.OnFunctionDeclaration(function);
+            _stack.Push(function);
+            _listener.EnterFunctionDeclaration(function);
 
-            var stmts = function.Body.Statements.ToArray();
+            WaddleBlock(function.Body);
 
-            foreach (var stmt in stmts)
+            _listener.LeaveFunctionDeclaration(function);
+            _stack.Pop();
+        }
+
+        private void WaddleBlock(BlockSyntax functionBody)
+        {
+            _listener.EnterBlock(functionBody);
+
+            foreach (var stmt in functionBody.Statements)
             {
                 WaddleStmt(stmt);
             }
+            
+            _listener.LeaveBlock(functionBody);
         }
 
         private void WaddleStmt(StatementSyntax stmt)
@@ -64,97 +91,153 @@ namespace Waddle.Core.Syntax.Ast
 
         private void WaddlePrintStmt(PrintStmtSyntax printStmt)
         {
-            List <T> arguments = new();
+            _listener.EnterPrintStmt(printStmt);
+
             foreach (var printStmtArgument in printStmt.Arguments)
             {
-                arguments.Add(WaddleExpression(printStmtArgument));
+                WaddleExpression(printStmtArgument);
             }
-            
-            _listener.OnPrintStmt(printStmt, arguments);
+
+            _listener.LeavePrintStmt(printStmt);
         }
 
         private void WaddleIfStmt(IfStmtSyntax ifStmt)
         {
-            _listener.OnIfStmt(ifStmt, WaddleExpression(ifStmt.Expression));
-            
+            _listener.EnterIfStmt(ifStmt);
+
+            WaddleExpression(ifStmt.Expression);
+            WaddleBlock(ifStmt.Body);
+
+            _listener.LeaveIfStmt(ifStmt);
         }
 
         private void WaddleReturnStmt(ReturnStmtSyntax returnStmt)
         {
-            _listener.OnReturnStmt(returnStmt, WaddleExpression(returnStmt.Expression));
+            _listener.EnterReturnStmt(returnStmt);
+
+            WaddleExpression(returnStmt.Expression);
+
+            _listener.LeaveReturnStmt(returnStmt);
         }
 
         private void WaddleAssignStmt(AssignStmtSyntax assignStmt)
         {
-            _listener.OnAssignStmt(assignStmt, WaddleExpression(assignStmt.Expression));
+            _listener.EnterAssignStmt(assignStmt);
+
+            WaddleExpression(assignStmt.Expression);
+
+            _listener.LeaveAssignStmt(assignStmt);
         }
 
         private void WaddleDeclStmt(DeclStmtSyntax declStmt)
         {
-            _listener.OnDeclStmt(declStmt, WaddleExpression(declStmt.Expression));
+            _listener.EnterDeclStmt(declStmt);
+
+            WaddleExpression(declStmt.Expression);
+
+            _listener.LeaveDeclStmt(declStmt);
         }
 
-        private T WaddleExpression(ExpressionSyntax exprStmt)
+        private void WaddleExpression(ExpressionSyntax exprStmt)
         {
-            return exprStmt switch
+            switch (exprStmt)
             {
-                LogicalExpressionSyntax logicalExpr => WaddleLogicalExpr(logicalExpr),
-                ProductExpressionSyntax productExpr => WaddleProductExpr(productExpr),
-                RelationalExpressionSyntax relationalExpr => WaddleRelationalExpr(relationalExpr),
-                TermExpressionSyntax termExpr => WaddleTermExpr(termExpr),
-                InvocationExpressionSyntax invocationExpr => WaddleInvocationExpr(invocationExpr),
-                BoolLiteralAtom atom => WaddleBoolLiteral(atom),
-                IntegerLiteralAtom atom => WaddleIntegerLiteral(atom),
-                StringLiteralAtom atom => WaddleStringLiteral(atom),
-                IdentifierAtom atom => WaddleIdentifier(atom),
-                _ => throw new ArgumentOutOfRangeException(nameof(exprStmt)),
+                case LogicalExpressionSyntax logicalExpr:
+                    WaddleLogicalExpr(logicalExpr);
+                    break;
+                case ProductExpressionSyntax productExpr:
+                    WaddleProductExpr(productExpr);
+                    break;
+                case RelationalExpressionSyntax relationalExpr:
+                    WaddleRelationalExpr(relationalExpr);
+                    break;
+                case TermExpressionSyntax termExpr:
+                    WaddleTermExpr(termExpr);
+                    break;
+                case InvocationExpressionSyntax invocationExpr:
+                    WaddleInvocationExpr(invocationExpr);
+                    break;
+                case BoolLiteralAtom atom:
+                    WaddleBoolLiteral(atom);
+                    break;
+                case IntegerLiteralAtom atom:
+                    WaddleIntegerLiteral(atom);
+                    break;
+                case StringLiteralAtom atom:
+                    WaddleStringLiteral(atom);
+                    break;
+                case IdentifierAtom atom:
+                    WaddleIdentifier(atom);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(exprStmt));
             };
         }
 
-        private T WaddleIdentifier(IdentifierAtom atom)
+        private void WaddleIdentifier(IdentifierAtom atom)
         {
-            return _listener.OnIdentifierLiteral(atom);
+            _listener.EnterIdentifierLiteral(atom);
+            _listener.LeaveIdentifierLiteral(atom);
         }
 
-        private T WaddleStringLiteral(StringLiteralAtom atom)
+        private void WaddleStringLiteral(StringLiteralAtom atom)
         {
-            return _listener.OnStringLiteral(atom);
+            _listener.EnterStringLiteral(atom);
+            _listener.LeaveStringLiteral(atom);
         }
 
-        private T WaddleIntegerLiteral(IntegerLiteralAtom atom)
+        private void WaddleIntegerLiteral(IntegerLiteralAtom atom)
         {
-            return _listener.OnIntegerLiteral(atom);
+            _listener.EnterIntegerLiteral(atom);
+            _listener.LeaveIntegerLiteral(atom);
         }
 
-        private T WaddleBoolLiteral(BoolLiteralAtom atom)
+        private void WaddleBoolLiteral(BoolLiteralAtom atom)
         {
-            return _listener.OnBoolLiteral(atom);
+            _listener.EnterBoolLiteral(atom);
+            _listener.LeaveBoolLiteral(atom);
         }
 
-        private T WaddleTermExpr(TermExpressionSyntax termExpr)
+        private void WaddleTermExpr(TermExpressionSyntax termExpr)
         {
-            return _listener.OnTermExpr(termExpr, () => WaddleExpression(termExpr.Left), () => WaddleExpression(termExpr.Right));
+            _listener.EnterTermExpr(termExpr);
+            WaddleExpression(termExpr.Left);
+            WaddleExpression(termExpr.Right);
+            _listener.LeaveTermExpr(termExpr);
         }
 
-        private T WaddleProductExpr(ProductExpressionSyntax productExpr)
+        private void WaddleProductExpr(ProductExpressionSyntax productExpr)
         {
-            return _listener.OnProductExpr(productExpr, () => WaddleExpression(productExpr.Left), () => WaddleExpression(productExpr.Right));
+            _listener.EnterProductExpr(productExpr);
+            WaddleExpression(productExpr.Left);
+            WaddleExpression(productExpr.Right);
+            _listener.LeaveProductExpr(productExpr);
         }
 
-        private T WaddleLogicalExpr(LogicalExpressionSyntax logicalExpr)
+        private void WaddleLogicalExpr(LogicalExpressionSyntax logicalExpr)
         {
-            return _listener.OnLogicalExpr(logicalExpr, () => WaddleExpression(logicalExpr.Left), () => WaddleExpression(logicalExpr.Right));
+            _listener.EnterLogicalExpr(logicalExpr);
+            WaddleExpression(logicalExpr.Left);
+            WaddleExpression(logicalExpr.Right);
+            _listener.LeaveLogicalExpr(logicalExpr);
         }
 
-        private T WaddleRelationalExpr(RelationalExpressionSyntax relationalExpr)
+        private void WaddleRelationalExpr(RelationalExpressionSyntax relationalExpr)
         {
-            return _listener.OnRelationalExpr(relationalExpr, () => WaddleExpression(relationalExpr.Left), () => WaddleExpression(relationalExpr.Right));
+            _listener.EnterRelationalExpr(relationalExpr);
+            WaddleExpression(relationalExpr.Left);
+            WaddleExpression(relationalExpr.Right);
+            _listener.LeaveRelationalExpr(relationalExpr);
         }
 
-        private T WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
+        private void WaddleInvocationExpr(InvocationExpressionSyntax invocationExpr)
         {
-            return _listener.OnInvocationExpr(invocationExpr, WaddleExpression);
+            _listener.EnterInvocationExpr(invocationExpr);
+            foreach (var argument in invocationExpr.Arguments)
+            {
+                WaddleExpression(argument);
+            }
+            _listener.LeaveInvocationExpr(invocationExpr);
         }
     }
 }
-#endif
