@@ -19,6 +19,6 @@ namespace Waddle.Core.Syntax.Ast
         /// <summary>
         /// Gets the direct parent of the current syntax if any.
         /// </summary>
-        protected Syntax? Parent => _ancestors.TryPeek(out var syntax) ? syntax : null;
+        public Syntax? Parent => _ancestors.TryPeek(out var syntax) ? syntax : null;
     }
 }
