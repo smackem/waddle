@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Waddle.Core.Ast;
+using Waddle.Core.Syntax;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Semantics
 {
     public class SemanticWaddler
     {

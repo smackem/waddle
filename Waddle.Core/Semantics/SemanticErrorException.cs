@@ -1,6 +1,6 @@
 using System;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Semantics
 {
     // TODO: add line and char position
     public class SemanticErrorException : Exception

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public class WaddleContext
     {

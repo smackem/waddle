@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
+using Waddle.Core.Ast;
 using Waddle.Core.Lexing;
+using Waddle.Core.Semantics;
 using Waddle.Core.Syntax;
-using Waddle.Core.Syntax.Ast;
 using Xunit;
 
 namespace Waddle.Test

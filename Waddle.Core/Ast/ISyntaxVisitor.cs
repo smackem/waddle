@@ -1,4 +1,4 @@
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public interface ISyntaxVisitor<out TResult>
     {

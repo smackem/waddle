@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Waddle.Core.Lexing;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public abstract record Syntax(Token StartToken)
     {

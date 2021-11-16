@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public class TypeExtractingVisitor : BaseSyntaxVisitor<TypeSymbol>
     {

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Xsl;
+using Waddle.Core.Ast;
 using Waddle.Core.Lexing;
-using Waddle.Core.Syntax.Ast;
 
 namespace Waddle.Core.Syntax
 {

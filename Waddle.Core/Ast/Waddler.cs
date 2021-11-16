@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public class Waddler
     {

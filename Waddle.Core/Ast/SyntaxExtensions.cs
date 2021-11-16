@@ -1,7 +1,7 @@
 using System;
 using Waddle.Core.Lexing;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     public static class SyntaxExtensions
     {

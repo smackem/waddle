@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Waddle.Core.Syntax.Ast
+namespace Waddle.Core.Ast
 {
     // TODO: translate into a IWaddleListener
     public class SymbolWaddler
