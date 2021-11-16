@@ -19,6 +19,19 @@ namespace Waddle.Core.Ast
         /// <summary>
         /// Gets the direct parent of the current syntax if any.
         /// </summary>
-        public Syntax? Parent => _ancestors.TryPeek(out var syntax) ? syntax : null;
+        public Syntax? Parent
+        {
+            get
+            {
+                _ancestors.TryPop(out var syntaxCurrent);
+                _ancestors.TryPeek(out var syntax);
+                if (syntaxCurrent != null)
+                {
+                    _ancestors.Push(syntaxCurrent);
+                }
+                
+                return syntax;
+            }
+        }
     }
 }

@@ -151,9 +151,13 @@ namespace Waddle.Core.Semantics
 
         public bool EnterTermExpr(TermExpressionSyntax termExpr, WaddleContext ctx)
         {
-            if (termExpr.Left.Accept(TypeVisitor) != termExpr.Right.Accept(TypeVisitor))
+            if (termExpr.Left.Accept(TypeVisitor) != TypeSymbol.Integer)
             {
-                throw new SemanticErrorException("incompatible types");
+                throw new SemanticErrorException($"Not an Integer @({termExpr.Left.StartToken.LineNumber}{termExpr.Left.StartToken.CharPosition}).");
+            }
+            if (termExpr.Right.Accept(TypeVisitor) != TypeSymbol.Integer)
+            {
+                throw new SemanticErrorException($"Not an Integer @({termExpr.Right.StartToken.LineNumber}{termExpr.Right.StartToken.CharPosition}).");
             }
 
             return true;
@@ -166,9 +170,13 @@ namespace Waddle.Core.Semantics
 
         public bool EnterProductExpr(ProductExpressionSyntax productExpr, WaddleContext ctx)
         {
-            if (productExpr.Left.Accept(TypeVisitor) != productExpr.Right.Accept(TypeVisitor))
+            if (productExpr.Left.Accept(TypeVisitor) != TypeSymbol.Integer)
             {
-                throw new SemanticErrorException("incompatible types");
+                throw new SemanticErrorException($"Not an Integer @({productExpr.Left.StartToken.LineNumber}{productExpr.Left.StartToken.CharPosition}).");
+            }
+            if (productExpr.Right.Accept(TypeVisitor) != TypeSymbol.Integer)
+            {
+                throw new SemanticErrorException($"Not an Integer @({productExpr.Right.StartToken.LineNumber}{productExpr.Right.StartToken.CharPosition}).");
             }
 
             return true;
@@ -181,9 +189,13 @@ namespace Waddle.Core.Semantics
 
         public bool EnterRelationalExpr(RelationalExpressionSyntax relationalExpr, WaddleContext ctx)
         {
-            if (relationalExpr.Left.Accept(TypeVisitor) != relationalExpr.Right.Accept(TypeVisitor))
+            if (relationalExpr.Left.Accept(TypeVisitor) != TypeSymbol.Integer)
             {
-                throw new SemanticErrorException("incompatible types");
+                throw new SemanticErrorException($"Not an Integer @({relationalExpr.Left.StartToken.LineNumber}{relationalExpr.Left.StartToken.CharPosition}).");
+            }
+            if (relationalExpr.Right.Accept(TypeVisitor) != TypeSymbol.Integer)
+            {
+                throw new SemanticErrorException($"Not an Integer @({relationalExpr.Right.StartToken.LineNumber}{relationalExpr.Right.StartToken.CharPosition}).");
             }
 
             return true;
@@ -196,9 +208,13 @@ namespace Waddle.Core.Semantics
 
         public bool EnterLogicalExpr(LogicalExpressionSyntax logicalExpr, WaddleContext ctx)
         {
-            if (logicalExpr.Left.Accept(TypeVisitor) != logicalExpr.Right.Accept(TypeVisitor))
+            if (logicalExpr.Left.Accept(TypeVisitor) != TypeSymbol.Bool)
             {
-                throw new SemanticErrorException("incompatible types");
+                throw new SemanticErrorException($"Not an Bool @({logicalExpr.Left.StartToken.LineNumber}{logicalExpr.Left.StartToken.CharPosition}).");
+            }
+            if (logicalExpr.Right.Accept(TypeVisitor) != TypeSymbol.Bool)
+            {
+                throw new SemanticErrorException($"Not an Bool @({logicalExpr.Right.StartToken.LineNumber}{logicalExpr.Right.StartToken.CharPosition}).");
             }
 
             return true;
@@ -333,6 +349,11 @@ namespace Waddle.Core.Semantics
                 throw new SemanticErrorException($"can not use declare statement outside of function.");
             }
 
+            if (_currentFunction?.Variables.ContainsKey(declStmt.ParameterDeclSyntax.Name) == false)
+            {
+                throw new SemanticErrorException($"{declStmt.ParameterDeclSyntax.Name} is not an available variable at this position.");
+            }
+            
             var variable = _currentFunction?.Variables[declStmt.ParameterDeclSyntax.Name]!;
             var exprType = declStmt.Expression.Accept(TypeVisitor);
 
@@ -361,7 +382,7 @@ namespace Waddle.Core.Semantics
             {
                 if (currentParent.Name == _currentFunction!.Name && _currentFunction.Type != null)
                 {
-                    StatementSyntax? lastStmnt = block.Statements.Last();
+                    StatementSyntax? lastStmnt = block.Statements.LastOrDefault();
                     if (lastStmnt is ReturnStmtSyntax == false)
                     {
                         throw new SemanticErrorException("Last Statement must be return if function has a type");

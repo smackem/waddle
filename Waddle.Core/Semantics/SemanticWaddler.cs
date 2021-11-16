@@ -54,16 +54,19 @@ namespace Waddle.Core.Semantics
 
         private void WaddleFunctionDeclaration(FunctionDeclSyntax function)
         {
-            var stmts = function.Body.Statements.ToArray();
+            WaddleBody(function.Body);
 
-            foreach (var stmt in stmts)
-            {
-                WaddleStmt(stmt);
-            }
-
-            if (_currentFunction?.Type is not null && stmts.LastOrDefault() is not ReturnStmtSyntax)
+            if (_currentFunction?.Type is not null && function.Body.Statements.LastOrDefault() is not ReturnStmtSyntax)
             {
                 throw new SemanticErrorException($"missing return statement in function {_currentFunction?.Name}");
+            }
+        }
+
+        private void WaddleBody(BlockSyntax blockSyntax)
+        {
+            foreach (var stmt in blockSyntax.Statements.ToArray())
+            {
+                WaddleStmt(stmt);
             }
         }
 
@@ -119,6 +122,8 @@ namespace Waddle.Core.Semantics
             {
                 throw new SemanticErrorException("If-Statement expression must result in boolean value.");
             }
+
+            WaddleBody(ifStmt.Body);
         }
 
         private void WaddleReturnStmt(ReturnStmtSyntax returnStmt)
@@ -173,6 +178,11 @@ namespace Waddle.Core.Semantics
                 throw new SemanticErrorException($"can not use declare statement outside of function.");
             }
 
+            if (_currentFunction?.Variables.ContainsKey(declStmt.ParameterDeclSyntax.Name) == false)
+            {
+                throw new SemanticErrorException($"{declStmt.ParameterDeclSyntax.Name} is not an available variable at this position.");
+            }
+            
             var variable = _currentFunction?.Variables[declStmt.ParameterDeclSyntax.Name]!;
             var exprType = WaddleExpression(declStmt.Expression);
 
