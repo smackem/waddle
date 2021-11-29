@@ -43,5 +43,10 @@ mul
         {
             OpCode = opCode;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(OpCode)}: {OpCode}, {nameof(IntegerArg)}: {IntegerArg}";
+        }
     }
 }

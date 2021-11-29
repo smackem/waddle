@@ -1,4 +1,4 @@
-using Waddle.Core.ByteCode;
+using System;
 
 namespace Waddle.Core.Runtime
 {
@@ -21,16 +21,26 @@ namespace Waddle.Core.Runtime
             return _buffer[--_top];
         }
 
-        public RuntimeValue Get(int index)
+        public RuntimeValue this[int index]
         {
-            // TODO check index
-            return _buffer[index];
-        }
+            get
+            {
+                if (index < 0 || index >= _buffer.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), $"index {index} out of range");
+                }
 
-        public void Set(int index, RuntimeValue value)
-        {
-            // TODO check index
-            _buffer[index] = value;
+                return _buffer[index];
+            }
+            set
+            {
+                if (index < 0 || index >= _buffer.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), $"index {index} out of range");
+                }
+
+                _buffer[index] = value;
+            }
         }
     }
 }

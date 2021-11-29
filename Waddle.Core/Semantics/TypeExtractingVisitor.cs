@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Waddle.Core.Ast;
 
-namespace Waddle.Core.Ast
+namespace Waddle.Core.Semantics
 {
     public class TypeExtractingVisitor : BaseSyntaxVisitor<TypeSymbol>
     {
-        private readonly IDictionary<string, Symbol> _symbols;
+        private readonly IReadOnlyDictionary<string, Symbol> _symbols;
         
-        public TypeExtractingVisitor(IDictionary<string, Symbol> symbols) : base(TypeSymbol.Void)
+        public TypeExtractingVisitor(IReadOnlyDictionary<string, Symbol> symbols) : base(TypeSymbol.Void)
         {
             _symbols = symbols;
         }

@@ -20,7 +20,7 @@ namespace Waddle.Test
             interpreter.Interpret(program, stack);
 
             Assert.Equal(1, stack.Count);
-            Assert.Equal(3, stack.Get(0).Integer);
+            Assert.Equal(3, stack[0].Integer);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Waddle.Test
             interpreter.Interpret(program, stack);
 
             Assert.Equal(3, stack.Count);
-            Assert.Equal(10, stack.Get(1).Integer);
+            Assert.Equal(10, stack[1].Integer);
         }
     }
 }
