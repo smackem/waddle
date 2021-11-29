@@ -56,16 +56,35 @@ namespace Waddle.Test
 
             var program = new Instruction[]
             {
+                new(OpCode.PushI32) { IntegerArg = 0 },
+                new(OpCode.PushI32) { IntegerArg = 0 },
+                new(OpCode.PushI32) { IntegerArg = 0 },
+                
                 new(OpCode.PushI32) { IntegerArg = 1 },
-                new(OpCode.PushI32) { IntegerArg = 2 },
+                new(OpCode.StoreLocalI32) { IntegerArg = 2 },
+                
+                new(OpCode.LoadLocalI32) { IntegerArg = 1 },
+                new(OpCode.LoadLocalI32) { IntegerArg = 2 },
                 new(OpCode.AddI32),
+                new(OpCode.StoreLocalI32) { IntegerArg = 1 },
+                
+                new(OpCode.LoadLocalI32) { IntegerArg = 2 },
+                new(OpCode.PushI32) { IntegerArg = 1 },
+                new(OpCode.AddI32),
+                new(OpCode.StoreLocalI32) { IntegerArg = 2 },
+                
+                new(OpCode.LoadLocalI32) { IntegerArg = 2 },
+                new(OpCode.PushI32) { IntegerArg = 5 },
+                new(OpCode.EqI32) { IntegerArg = 5 },
+                new(OpCode.BranchZero) { IntegerArg = 5 },
+                
             };
             var interpreter = new Interpreter();
             var stack = new RuntimeStack();
             interpreter.Interpret(program, stack);
 
-            Assert.Equal(1, stack.Count);
-            Assert.Equal(3, stack.Get(0).Integer);
+            Assert.Equal(3, stack.Count);
+            Assert.Equal(10, stack.Get(1).Integer);
         }
     }
 }
