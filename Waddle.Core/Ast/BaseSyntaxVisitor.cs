@@ -9,102 +9,102 @@ namespace Waddle.Core.Ast
 
         protected TResult DefaultResult { get; }
 
-        public virtual TResult Visit(ProgramSyntax syntax)
+        public virtual TResult VisitProgram(ProgramSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(FunctionDeclSyntax syntax)
+        public virtual TResult VisitFunctionDecl(FunctionDeclSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(TypeSyntax syntax)
+        public virtual TResult VisitType(TypeSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(ParameterDeclSyntax syntax)
+        public virtual TResult VisitParameterDecl(ParameterDeclSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(BlockSyntax syntax)
+        public virtual TResult VisitBlock(BlockSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(ReturnStmtSyntax syntax)
+        public virtual TResult VisitReturnStmt(ReturnStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(IfStmtSyntax syntax)
+        public virtual TResult VisitIfStmt(IfStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(AssignStmtSyntax syntax)
+        public virtual TResult VisitAssignStmt(AssignStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(PrintStmtSyntax syntax)
+        public virtual TResult VisitPrintStmt(PrintStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(DeclStmtSyntax syntax)
+        public virtual TResult VisitDeclStmt(DeclStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(InvocationStmtSyntax syntax)
+        public virtual TResult VisitInvocationStmt(InvocationStmtSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(TermExpressionSyntax syntax)
+        public virtual TResult VisitTermExpr(TermExpressionSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(LogicalExpressionSyntax syntax)
+        public virtual TResult VisitLogicalExpr(LogicalExpressionSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(RelationalExpressionSyntax syntax)
+        public virtual TResult VisitRelationalExpr(RelationalExpressionSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(ProductExpressionSyntax syntax)
+        public virtual TResult VisitProductExpr(ProductExpressionSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(InvocationExpressionSyntax syntax)
+        public virtual TResult VisitInvocationExpr(InvocationExpressionSyntax syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(IntegerLiteralAtom syntax)
+        public virtual TResult VisitIntegerLiteral(IntegerLiteralAtom syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(BoolLiteralAtom syntax)
+        public virtual TResult VisitBoolLiteral(BoolLiteralAtom syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(StringLiteralAtom syntax)
+        public virtual TResult VisitStringLiteral(StringLiteralAtom syntax)
         {
             return DefaultResult;
         }
 
-        public virtual TResult Visit(IdentifierAtom syntax)
+        public virtual TResult VisitIdentifier(IdentifierAtom syntax)
         {
             return DefaultResult;
         }

@@ -22,7 +22,7 @@ namespace Waddle.Core.ByteCode
             _typeExtractor = new TypeExtractingVisitor(symbols);
         }
 
-        public override TypeSymbol Visit(ProgramSyntax syntax)
+        public override TypeSymbol VisitProgram(ProgramSyntax syntax)
         {
             foreach (var function in syntax.FunctionDeclarations)
             {
@@ -35,12 +35,12 @@ namespace Waddle.Core.ByteCode
             return DefaultResult;
         }
 
-        public override TypeSymbol Visit(FunctionDeclSyntax syntax)
+        public override TypeSymbol VisitFunctionDecl(FunctionDeclSyntax syntax)
         {
             return syntax.Body.Accept(this);
         }
 
-        public override TypeSymbol Visit(BlockSyntax syntax)
+        public override TypeSymbol VisitBlock(BlockSyntax syntax)
         {
             foreach (var stmt in syntax.Statements)
             {
@@ -50,18 +50,18 @@ namespace Waddle.Core.ByteCode
             return DefaultResult;
         }
 
-        public override TypeSymbol Visit(ReturnStmtSyntax syntax)
+        public override TypeSymbol VisitReturnStmt(ReturnStmtSyntax syntax)
         {
             return syntax.Expression.Accept(this);
         }
 
-        public override TypeSymbol Visit(IntegerLiteralAtom syntax)
+        public override TypeSymbol VisitIntegerLiteral(IntegerLiteralAtom syntax)
         {
             Emit(OpCode.PushI32, syntax.Value);
             return TypeSymbol.Integer;
         }
 
-        public override TypeSymbol Visit(TermExpressionSyntax term)
+        public override TypeSymbol VisitTermExpr(TermExpressionSyntax term)
         {
             term.Left.Accept(this);
             term.Right.Accept(this);

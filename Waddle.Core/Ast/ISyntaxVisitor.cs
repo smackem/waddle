@@ -2,25 +2,25 @@ namespace Waddle.Core.Ast
 {
     public interface ISyntaxVisitor<out TResult>
     {
-        TResult Visit(ProgramSyntax syntax);
-        TResult Visit(FunctionDeclSyntax syntax);
-        TResult Visit(TypeSyntax syntax);
-        TResult Visit(ParameterDeclSyntax syntax);
-        TResult Visit(BlockSyntax syntax);
-        TResult Visit(ReturnStmtSyntax syntax);
-        TResult Visit(IfStmtSyntax syntax);
-        TResult Visit(AssignStmtSyntax syntax);
-        TResult Visit(PrintStmtSyntax syntax);
-        TResult Visit(DeclStmtSyntax syntax);
-        TResult Visit(InvocationStmtSyntax syntax);
-        TResult Visit(TermExpressionSyntax syntax);
-        TResult Visit(LogicalExpressionSyntax syntax);
-        TResult Visit(RelationalExpressionSyntax syntax);
-        TResult Visit(ProductExpressionSyntax syntax);
-        TResult Visit(InvocationExpressionSyntax syntax);
-        TResult Visit(IntegerLiteralAtom syntax);
-        TResult Visit(BoolLiteralAtom syntax);
-        TResult Visit(StringLiteralAtom syntax);
-        TResult Visit(IdentifierAtom syntax);
+        TResult VisitProgram(ProgramSyntax syntax);
+        TResult VisitFunctionDecl(FunctionDeclSyntax syntax);
+        TResult VisitType(TypeSyntax syntax);
+        TResult VisitParameterDecl(ParameterDeclSyntax syntax);
+        TResult VisitBlock(BlockSyntax syntax);
+        TResult VisitReturnStmt(ReturnStmtSyntax syntax);
+        TResult VisitIfStmt(IfStmtSyntax syntax);
+        TResult VisitAssignStmt(AssignStmtSyntax syntax);
+        TResult VisitPrintStmt(PrintStmtSyntax syntax);
+        TResult VisitDeclStmt(DeclStmtSyntax syntax);
+        TResult VisitInvocationStmt(InvocationStmtSyntax syntax);
+        TResult VisitTermExpr(TermExpressionSyntax syntax);
+        TResult VisitLogicalExpr(LogicalExpressionSyntax syntax);
+        TResult VisitRelationalExpr(RelationalExpressionSyntax syntax);
+        TResult VisitProductExpr(ProductExpressionSyntax syntax);
+        TResult VisitInvocationExpr(InvocationExpressionSyntax syntax);
+        TResult VisitIntegerLiteral(IntegerLiteralAtom syntax);
+        TResult VisitBoolLiteral(BoolLiteralAtom syntax);
+        TResult VisitStringLiteral(StringLiteralAtom syntax);
+        TResult VisitIdentifier(IdentifierAtom syntax);
     }
 }

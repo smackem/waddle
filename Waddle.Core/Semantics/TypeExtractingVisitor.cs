@@ -12,37 +12,37 @@ namespace Waddle.Core.Semantics
             _symbols = symbols;
         }
 
-        public override TypeSymbol Visit(LogicalExpressionSyntax syntax)
+        public override TypeSymbol VisitLogicalExpr(LogicalExpressionSyntax syntax)
         {
             return TypeSymbol.Bool;
         }
 
-        public override TypeSymbol Visit(RelationalExpressionSyntax syntax)
+        public override TypeSymbol VisitRelationalExpr(RelationalExpressionSyntax syntax)
         {
             return TypeSymbol.Bool;
         }
 
-        public override TypeSymbol Visit(StringLiteralAtom syntax)
+        public override TypeSymbol VisitStringLiteral(StringLiteralAtom syntax)
         {
             return TypeSymbol.String;
         }
 
-        public override TypeSymbol Visit(TermExpressionSyntax syntax)
+        public override TypeSymbol VisitTermExpr(TermExpressionSyntax syntax)
         {
             return GetTermType(syntax.Left.Accept(this), syntax.Right.Accept(this));
         }
 
-        public override TypeSymbol Visit(IdentifierAtom syntax)
+        public override TypeSymbol VisitIdentifier(IdentifierAtom syntax)
         {
             return _symbols[syntax.Identifier].Type!;
         }
 
-        public override TypeSymbol Visit(BoolLiteralAtom syntax)
+        public override TypeSymbol VisitBoolLiteral(BoolLiteralAtom syntax)
         {
             return TypeSymbol.Bool;
         }
 
-        public override TypeSymbol Visit(IntegerLiteralAtom syntax)
+        public override TypeSymbol VisitIntegerLiteral(IntegerLiteralAtom syntax)
         {
             return TypeSymbol.Integer;
         }

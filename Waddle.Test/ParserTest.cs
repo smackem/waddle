@@ -105,21 +105,5 @@ namespace Waddle.Test
             var parser = new Parser(tokens);
             parser.Parse();
         }
-
-        [Fact]
-        public void AstEmissionTest()
-        {
-            var reader = @"
-                function main() {
-                }
-                ".CharwiseWithTrimmedLines();
-            using var lexer = new Lexer(reader);
-            var tokens = lexer.Lex().ToList();
-            var parser = new Parser(tokens);
-            var ast = parser.Parse();
-            var symbols = new SymbolWaddler().WaddleProgram((ProgramSyntax)ast);
-            var semanticWaddler = new SemanticWaddler(symbols);
-            semanticWaddler.WaddleProgram((ProgramSyntax)ast);
-        }
     }
 }

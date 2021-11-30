@@ -3,6 +3,7 @@ using Waddle.Core.Ast;
 using Waddle.Core.ByteCode;
 using Waddle.Core.Lexing;
 using Waddle.Core.Runtime;
+using Waddle.Core.Semantics;
 using Waddle.Core.Syntax;
 using Xunit;
 
@@ -30,6 +31,7 @@ namespace Waddle.Test
             var parser = new Parser(tokens);
             var ast = (ProgramSyntax) parser.Parse();
             var functions = new SymbolWaddler().WaddleProgram(ast);
+            new Waddler(new SemanticWaddleListener(functions)).WaddleProgram(ast);
             var emitter = new EmittingVisitor(functions[Naming.EntryPointFunctionName].Variables
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value as Symbol));
             ast.Accept(emitter);

@@ -13,7 +13,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitProgram(this);
         }
     }
 
@@ -22,7 +22,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitFunctionDecl(this);
         }
     }
 
@@ -30,7 +30,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitType(this);
         }
     }
 
@@ -38,7 +38,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitParameterDecl(this);
         }
     }
 
@@ -46,7 +46,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitBlock(this);
         }
     }
 
@@ -56,7 +56,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitReturnStmt(this);
         }
     }
 
@@ -64,7 +64,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitIfStmt(this);
         }
     }
 
@@ -74,7 +74,7 @@ namespace Waddle.Core.Ast
 
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitAssignStmt(this);
         }
     }
 
@@ -82,7 +82,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitPrintStmt(this);
         }
     }
 
@@ -90,7 +90,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitDeclStmt(this);
         }
     }
 
@@ -98,7 +98,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitInvocationStmt(this);
         }
     }
 
@@ -111,7 +111,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitTermExpr(this);
         }
     }
 
@@ -126,7 +126,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitLogicalExpr(this);
         }
     }
 
@@ -141,7 +141,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitRelationalExpr(this);
         }
     }
 
@@ -160,7 +160,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitProductExpr(this);
         }
     }
 
@@ -181,7 +181,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitInvocationExpr(this);
         }
     }
 
@@ -189,7 +189,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitIntegerLiteral(this);
         }
     }
 
@@ -197,7 +197,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitBoolLiteral(this);
         }
     }
 
@@ -205,7 +205,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitStringLiteral(this);
         }
     }
 
@@ -213,7 +213,7 @@ namespace Waddle.Core.Ast
     {
         public override TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitIdentifier(this);
         }
     }
 }
